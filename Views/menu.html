@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <!--
+    Vista: Menú Principal
+    - Panel con accesos a Reservas, Tickets, Usuarios y Dashboard.
+    - Botón de cerrar sesión invoca la función global `cerrarSesion()` definida en `../Assets/js/menu.js`.
+  -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ROOMFLOW — Menú Principal</title>
@@ -39,23 +44,10 @@
   <main class="menu-layout">
     <section class="menu-grid">
       <div class="menu-card">
-        <div class="menu-icon">⚠️</div>
-        <h2>Incidencias</h2>
+        <div class="menu-icon">📊</div>
+        <h2>Dashboard</h2>
         <p>Reporte de Incidencia Técnica en Aula</p>
-        <a href="incidencias.html" class="btn-acceder">Acceder</a>
-      </div>
-
-      <div class="menu-card">
-        <div class="menu-icon">⛔</div>
-        <h2>Inhabilitaciones</h2>
-        <p>Re-agendamiento por Inhabilitación de Espacio</p>
-        <a href="inhabilitaciones.html" class="btn-acceder">Acceder</a>
-      </div>
-      <div class="menu-card">
-        <div class="menu-icon">⚡</div>
-        <h2>Reserva Rápida</h2>
-        <p>Gestión de Reservas Rapidas</p>
-        <a href="rapidas.html" class="btn-acceder">Acceder</a>
+        <a href="dashboard.html" class="btn-acceder">Acceder</a>
       </div>
     </section>
   </main>

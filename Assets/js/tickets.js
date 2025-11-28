@@ -1,11 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Referencias al DOM
   const form = document.getElementById("ticket-form");
   const feedback = document.getElementById("ticket-feedback");
   const ticketList = document.getElementById("ticket-list");
   const tableBody = document.getElementById("ticket-table-body");
 
+  // Clave de almacenamiento para los tickets
   const TICKETS_KEY = "roomflow_tickets";
 
+  // Genera el siguiente número de ticket (comienza en 1001 por defecto)
   function getNextTicketNumber() {
     const last = parseInt(localStorage.getItem("roomflow_last_ticket") || "1000", 10);
     const next = last + 1;
@@ -13,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return next;
   }
 
+  // Guarda un ticket en localStorage y le asigna un número y estado inicial
   function saveTicket(data) {
     const tickets = JSON.parse(localStorage.getItem(TICKETS_KEY)) || [];
     const numero = getNextTicketNumber();
@@ -21,12 +25,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return numero;
   }
 
+  // Actualiza campos de un ticket existente (por índice)
   function updateTicket(index, data) {
     const tickets = JSON.parse(localStorage.getItem(TICKETS_KEY)) || [];
     tickets[index] = { ...tickets[index], ...data };
     localStorage.setItem(TICKETS_KEY, JSON.stringify(tickets));
   }
 
+  // Renderiza la lista de tickets (vista lista y tabla)
   function loadTickets() {
     const tickets = JSON.parse(localStorage.getItem(TICKETS_KEY)) || [];
 
@@ -52,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Determinar si el ticket está cerrado
         const isCerrado = t.estado === "cerrado";
         
-        // Botón actualizar estado
+        // Botón para avanzar estado (deshabilitado si está cerrado)
         let estadoButton = '';
         if (isCerrado) {
           estadoButton = '<button disabled>Cerrado</button>';
@@ -76,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Avanza el estado del ticket a la siguiente etapa predefinida
   window.actualizarEstado = (index) => {
     const tickets = JSON.parse(localStorage.getItem(TICKETS_KEY)) || [];
     const estados = ["asignado", "en progreso", "resuelto", "cerrado"];
@@ -93,6 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // Abre un modal para editar un ticket
+  // - Crea un formulario dinámico, permite actualizar campos y guarda con updateTicket
   window.editarTicket = (index) => {
     const tickets = JSON.parse(localStorage.getItem(TICKETS_KEY)) || [];
     const ticket = tickets[index];
@@ -170,6 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  // Manejo del envío del formulario principal de ticket
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -179,12 +189,15 @@ document.addEventListener("DOMContentLoaded", () => {
         tipo: form.tipo.value,
         descripcion: form.descripcion.value,
         prioridad: form.prioridad.value,
+        // Extrae sólo el nombre del archivo (no la ruta)
         archivo: form.archivo.value.split("\\").pop() || null,
       };
       const ticketNumber = saveTicket(ticket);
+      // Redirige a página de confirmación con el número en query string
       window.location.href = `confirmacion-ticket.html?n=${ticketNumber}`;
     });
   }
 
+  // Inicializar listado al cargar la página
   loadTickets();
 });

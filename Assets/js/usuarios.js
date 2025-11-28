@@ -1,11 +1,16 @@
+// Clave de almacenamiento para la lista de usuarios
 const USUARIOS_KEY = "roomflow_usuarios";
+
+// Índice del usuario que se está editando (null = crear nuevo)
 let editIndex = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Referencias al DOM
   const form = document.getElementById("usuario-form");
   const feedback = document.getElementById("usuario-feedback");
   const tableBody = document.getElementById("usuario-table-body");
 
+  // Maneja el envío del formulario de creación/edición de usuarios
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const usuario = {
@@ -19,13 +24,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const usuarios = JSON.parse(localStorage.getItem(USUARIOS_KEY)) || [];
 
     if (editIndex !== null) {
+      // Actualiza un usuario existente
       usuarios[editIndex] = usuario;
       feedback.textContent = "Usuario actualizado correctamente.";
     } else {
+      // Crea un nuevo usuario
       usuarios.push(usuario);
       feedback.textContent = "Usuario creado correctamente.";
     }
 
+    // Guarda cambios en localStorage y limpia el formulario
     localStorage.setItem(USUARIOS_KEY, JSON.stringify(usuarios));
     form.reset();
     form.classList.add("hidden");
@@ -34,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderUsuarios();
   });
 
+  // Muestra el formulario para crear un nuevo usuario
   window.mostrarFormulario = () => {
     form.classList.remove("hidden");
     form.reset();
@@ -41,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     feedback.textContent = "";
   };
 
+  // Rellena y muestra el formulario para editar un usuario existente
   window.editarUsuario = (index) => {
     const usuarios = JSON.parse(localStorage.getItem(USUARIOS_KEY)) || [];
     const u = usuarios[index];
@@ -54,6 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
     feedback.textContent = "";
   };
 
+  // Elimina un usuario después de confirmación
   window.eliminarUsuario = (index) => {
     const usuarios = JSON.parse(localStorage.getItem(USUARIOS_KEY)) || [];
     if (confirm("¿Desea eliminar este usuario?")) {
@@ -63,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // Renderiza la tabla de usuarios a partir de lo guardado en localStorage
   function renderUsuarios() {
     const usuarios = JSON.parse(localStorage.getItem(USUARIOS_KEY)) || [];
     tableBody.innerHTML = "";
@@ -82,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
       tableBody.appendChild(row);
     });
 
-    // Datos de ejemplo iniciales si está vacío (opcional)
+    // Si no hay usuarios, sembrar datos de ejemplo opcionales
     if (usuarios.length === 0) {
       const seed = [
         { nombre: "Juan Pérez", email: "juan.perez@empresa.com", rol: "Administrador", edificio: "A", estado: "Activo" },
@@ -94,5 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Inicializa la vista al cargar la página
   renderUsuarios();
 });

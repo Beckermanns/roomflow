@@ -1,10 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Referencias al DOM
   const form = document.getElementById("reserva-form");
   const feedback = document.getElementById("reserva-feedback");
   const tableBody = document.getElementById("reserva-table-body");
 
+  // Clave usada en localStorage para almacenar las reservas
   const RESERVAS_KEY = "roomflow_reservas";
 
+  // Genera un ID incremental para cada reserva empezando por 5001
+  // - Guarda el último ID en localStorage bajo "roomflow_last_reserva".
   function getNextReservaID() {
     const last = parseInt(localStorage.getItem("roomflow_last_reserva") || "5000", 10);
     const next = last + 1;
@@ -12,6 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return next;
   }
 
+  // Guarda una nueva reserva en localStorage
+  // - Añade campo `id` y estado inicial `pendiente`.
   function saveReserva(data) {
     const reservas = JSON.parse(localStorage.getItem(RESERVAS_KEY)) || [];
     const id = getNextReservaID();
@@ -20,12 +26,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return id;
   }
 
+  // Carga y renderiza la lista de reservas en la tabla HTML
   function loadReservas() {
     const reservas = JSON.parse(localStorage.getItem(RESERVAS_KEY)) || [];
     if (tableBody) {
       tableBody.innerHTML = "";
       reservas.forEach((r, i) => {
         const row = document.createElement("tr");
+        // Si la reserva está pendiente, mostrar botones para aprobar/rechazar
         row.innerHTML = `
           <td>#${r.id}</td>
           <td>${r.recurso}</td>
@@ -45,6 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Función expuesta globalmente para cambiar el estado de una reserva
+  // - `index` es la posición en el array almacenado; `nuevoEstado` es texto.
   window.validarReserva = (index, nuevoEstado) => {
     const reservas = JSON.parse(localStorage.getItem(RESERVAS_KEY)) || [];
     reservas[index].estado = nuevoEstado;
@@ -52,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadReservas();
   };
 
+  // Manejo del envío del formulario de reservas
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -63,11 +74,13 @@ document.addEventListener("DOMContentLoaded", () => {
         motivo: form.motivo.value,
       };
       const id = saveReserva(reserva);
+      // Mostrar feedback y limpiar formulario
       feedback.textContent = `Reserva #${id} enviada correctamente.`;
       feedback.className = "feedback success";
       form.reset();
     });
   }
 
+  // Inicializar listado al cargar la página
   loadReservas();
 });
