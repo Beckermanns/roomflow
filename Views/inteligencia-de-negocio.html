@@ -1,24 +1,86 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!--
-    Vista: Dashboard (KPIs)
-    - Página estática placeholder para mostrar indicadores/estadísticas.
-    - Actualmente sólo contiene un encabezado y enlace de regreso al menú.
-    - Puede integrarse con gráficos o APIs para mostrar métricas.
-  -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ROOMFLOW — Menú Principal</title>
+  <title>ROOMFLOW — Análisis de KPIs para Toma de Decisiones</title>
   <link rel="stylesheet" href="../Assets/css/styles.css" />
-  <title>Incidencias</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1>
-        Dashboard interactivo de KPIs
-    </h1>
-      <header class="menu-header">
+  <header class="dashboard-header">
     <a href="menu.html" class="btn-volver">← Volver al Menú Principal</a>
+    <h1>Análisis de KPIs para Toma de Decisiones</h1>
   </header>
+
+  <main class="dashboard-layout">
+    <section class="filters">
+      <div class="filter-row">
+        <label for="fecha">Filtrar por fecha:</label>
+        <input type="date" id="fecha" value="2025-11-27" />
+        <button id="btnFiltrar" class="btn-primary">Aplicar filtro</button>
+      </div>
+    </section>
+
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <h3>Tiempo Prom. Atención</h3>
+        <p id="kpi-atencion">--</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Tiempo Prom. Resolución</h3>
+        <p id="kpi-resolucion">--</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Tickets Activos</h3>
+        <p id="kpi-activos">--</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Resueltos (día)</h3>
+        <p id="kpi-resueltos-hoy">--</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Total de Tickets</h3>
+        <p id="kpi-total">--</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Tickets Resueltos</h3>
+        <p id="kpi-resueltos">--</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Tasa de Resolución</h3>
+        <p id="kpi-tasa">--</p>
+      </div>
+      <div class="kpi-card">
+        <h3>Prioridad A/M/B</h3>
+        <p id="kpi-prioridades">--</p>
+      </div>
+    </section>
+
+    <section class="charts">
+      <div class="chart-card">
+        <h4>Tickets por Edificio</h4>
+        <canvas id="chart-edificios" height="120"></canvas>
+      </div>
+      <div class="chart-card">
+        <h4>Tickets por Estado</h4>
+        <canvas id="chart-estados" height="120"></canvas>
+      </div>
+      <div class="chart-card">
+        <h4>Tickets por Prioridad</h4>
+        <canvas id="chart-prioridades" height="120"></canvas>
+      </div>
+    </section>
+
+    <section id="detalleSala" class="hidden detalle-card">
+      <h3>Detalle seleccionado</h3>
+      <div id="detalleContenido"></div>
+      <div class="detalle-actions">
+        <button id="btnDescargar" class="btn-acceder">Descargar reporte</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="../Assets/js/dashboard.js"></script>
 </body>
 </html>
