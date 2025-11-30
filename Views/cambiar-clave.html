@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cambiar Contraseña — ROOMFLOW</title>
+  <link rel="stylesheet" href="../Assets/css/styles.css" />
+</head>
+<body>
+  <main class="layout">
+    <section class="card" role="form" aria-labelledby="cambiar-title">
+      <div class="card-header">
+        <h1 id="cambiar-title" class="brand">ROOMFLOW</h1>
+        <p class="subtitle">Establecer nueva contraseña</p>
+      </div>
+
+      <form id="cambiar-form" novalidate>
+        <div class="field">
+          <label for="nueva-clave">Nueva contraseña</label>
+          <div class="password-wrapper">
+            <input type="password" id="nueva-clave" name="nueva-clave" placeholder="Ingrese nueva contraseña" required />
+            <button type="button" id="toggle-password" aria-label="Mostrar contraseña">👁️</button>
+          </div>
+          <small class="error" id="clave-error" aria-live="polite"></small>
+        </div>
+
+        <button type="submit" class="btn-primary" id="btn-cambiar">Actualizar contraseña</button>
+        <div class="feedback" id="feedback" aria-live="polite" role="status"></div>
+      </form>
+    </section>
+  </main>
+
+  <script type="module" src="../Assets/js/cambiar-clave.js"></script>
+</body>
+</html>

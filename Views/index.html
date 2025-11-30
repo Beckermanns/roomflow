@@ -1,20 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!--
-    Vista: Página de Login
-    - Formulario con id `login-form` y campos `usuario`, `contrasena`.
-    - Feedback en `#feedback`; errores de campo en `#usuario-error` y `#contrasena-error`.
-    - Usa `../Assets/js/app.js` para validación local y simulación de autenticación (demo: admin/admin123).
-    - Mantener los atributos `id` y `name` del formulario para compatibilidad con el script.
-  -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ROOMFLOW — Sistema de Gestión de Salas y Tickets</title>
   <meta name="description" content="Login — ROOMFLOW: Sistema de Gestión de Salas y Tickets" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../Assets/css/styles.css" />
 </head>
 <body>
@@ -34,87 +24,26 @@
 
         <div class="field">
           <label for="contrasena">Contraseña</label>
-          <input type="password" id="contrasena" name="contrasena" placeholder="Ingrese su contraseña" autocomplete="current-password" required />
+          <div class="password-wrapper">
+            <input type="password" id="contrasena" name="contrasena" placeholder="Ingrese su contraseña" autocomplete="current-password" required />
+            <button type="button" id="toggle-password" aria-label="Mostrar contraseña">👁️</button>
+          </div>
           <small class="error" id="contrasena-error" aria-live="polite"></small>
         </div>
 
         <button type="submit" class="btn-primary" id="btn-ingresar">Ingresar</button>
 
         <div class="feedback" id="feedback" aria-live="polite" role="status"></div>
+
+        <p class="recovery-link">
+          ¿Olvidaste tu contraseña? <a href="recuperar.html">Recupérala aquí</a>
+        </p>
       </form>
     </section>
   </main>
 
-  <!-- Script de login con Supabase -->
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-
-    // Configuración de Supabase (usa tu URL y anon key)
-    const supabaseUrl = "https://TU-PROYECTO.supabase.co";
-    const supabaseKey = "TU_ANON_KEY"; // nunca uses la service_role en frontend
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const form = document.getElementById("login-form");
-    const usuarioInput = document.getElementById("usuario");
-    const contrasenaInput = document.getElementById("contrasena");
-    const usuarioError = document.getElementById("usuario-error");
-    const contrasenaError = document.getElementById("contrasena-error");
-    const feedback = document.getElementById("feedback");
-    const btnIngresar = document.getElementById("btn-ingresar");
-
-    function clearErrors() {
-      usuarioError.textContent = "";
-      contrasenaError.textContent = "";
-      feedback.textContent = "";
-      feedback.className = "feedback";
-    }
-
-    function validate() {
-      let valid = true;
-      clearErrors();
-      if (!usuarioInput.value.trim()) {
-        usuarioError.textContent = "El correo es obligatorio.";
-        valid = false;
-      }
-      if (!contrasenaInput.value.trim()) {
-        contrasenaError.textContent = "La contraseña es obligatoria.";
-        valid = false;
-      }
-      return valid;
-    }
-
-    async function login(email, password) {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-      return data;
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!validate()) return;
-
-      btnIngresar.disabled = true;
-      try {
-        const data = await login(usuarioInput.value.trim(), contrasenaInput.value);
-        feedback.textContent = "Ingreso exitoso. Redirigiendo…";
-        feedback.className = "feedback success";
-        // Redirige al menú o dashboard
-        window.location.href = "menu.html";
-      } catch (err) {
-        feedback.textContent = "Credenciales inválidas. Intente nuevamente.";
-        feedback.className = "feedback error";
-        contrasenaInput.value = "";
-        contrasenaInput.focus();
-      } finally {
-        btnIngresar.disabled = false;
-      }
-    });
-  </script>
+  <!-- Script externo ordenado -->
+  <script type="module" src="../Assets/js/app.js"></script>
 </body>
 </html>
-
-
 

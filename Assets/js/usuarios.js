@@ -44,8 +44,25 @@ async function cargarOpciones() {
 // Crear usuario
 btnCrear.addEventListener("click", async () => {
   const rut = form.rut.value.trim();
+
+  // 1. Crear usuario en Auth
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email: form.email.value,
+    password: "Temporal123."  // contraseña provisional
+  });
+
+  if (authError) {
+    feedback.textContent = "Error creando usuario Auth: " + authError.message;
+    feedback.className = "feedback error";
+    return;
+  }
+
+  const id_user = authData.user.id;
+
+  // 2. Insertar en tabla usuario
   const usuario = {
-    id_usuario: rut,
+    id_user,
+    rut,
     nombre: form.nombre.value,
     apellido: form.apellido.value,
     correo: form.email.value,
@@ -54,9 +71,10 @@ btnCrear.addEventListener("click", async () => {
     estado: form.estado.value
   };
 
-  const { error } = await supabase.from("usuario").insert([usuario]);
+  const { error } = await supabase.from("usuario").insert(usuario);
+
   if (error) {
-    feedback.textContent = "Error al crear: " + error.message;
+    feedback.textContent = "Error al crear usuario: " + error.message;
     feedback.className = "feedback error";
   } else {
     feedback.textContent = "Usuario creado correctamente.";
@@ -71,7 +89,7 @@ btnBuscar.addEventListener("click", async () => {
   const { data, error } = await supabase
     .from("usuario")
     .select("*")
-    .eq("id_usuario", rut)
+    .eq("rut", rut)
     .single();
 
   if (error || !data) {
@@ -82,6 +100,7 @@ btnBuscar.addEventListener("click", async () => {
     return;
   }
 
+  // Completar formulario
   form.nombre.value = data.nombre;
   form.apellido.value = data.apellido;
   form.email.value = data.correo;
@@ -89,7 +108,7 @@ btnBuscar.addEventListener("click", async () => {
   form.edificio.value = data.id_edificio;
   form.estado.value = data.estado;
 
-  usuarioActual = rut;
+  usuarioActual = data.id_user;   // AQUÍ SE GUARDA EL UUID REAL
   btnGuardar.disabled = false;
   feedback.textContent = "Usuario cargado para edición.";
   feedback.className = "feedback success";
@@ -109,7 +128,7 @@ form.addEventListener("submit", async (e) => {
   const { error } = await supabase
     .from("usuario")
     .update(usuario)
-    .eq("id_usuario", usuarioActual);
+    .eq("id_user", usuarioActual);
 
   if (error) {
     feedback.textContent = "Error al guardar: " + error.message;

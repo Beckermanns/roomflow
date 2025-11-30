@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recuperar Contraseña — ROOMFLOW</title>
+  <link rel="stylesheet" href="../Assets/css/styles.css" />
+</head>
+<body>
+  <main class="layout">
+    <section class="card" role="form" aria-labelledby="recuperar-title">
+      <div class="card-header">
+        <h1 id="recuperar-title" class="brand">ROOMFLOW</h1>
+        <p class="subtitle">Recuperar contraseña</p>
+      </div>
+
+      <form id="recuperar-form" novalidate>
+        <div class="field">
+          <label for="email">Correo electrónico</label>
+          <input type="email" id="email" name="email" placeholder="Ingrese su correo" required />
+          <small class="error" id="email-error" aria-live="polite"></small>
+        </div>
+
+        <button type="submit" class="btn-primary" id="btn-recuperar">Enviar enlace</button>
+        <div class="feedback" id="feedback" aria-live="polite" role="status"></div>
+      </form>
+    </section>
+  </main>
+
+  <script type="module" src="../Assets/js/recuperar.js"></script>
+</body>
+</html>
