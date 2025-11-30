@@ -1,3 +1,10 @@
+/*importar ddbb */
+import { Client } from "https://wqfitbdetdyohbdxqfap.supabase.co"; 
+
+const supabaseUrl = "https://wqfitbdetdyohbdxqfap.supabase.co";
+const supabaseKey = "process.env.SUPABASE_KEY";
+const supabase = Client(supabaseUrl, supabaseKey);
+
 (function () {
   /*
     Módulo IIFE (Immediately Invoked Function Expression):

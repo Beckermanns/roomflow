@@ -27,8 +27,8 @@
 
       <form id="login-form" novalidate>
         <div class="field">
-          <label for="usuario">Usuario</label>
-          <input type="text" id="usuario" name="usuario" placeholder="Ingrese su usuario" autocomplete="username" required />
+          <label for="usuario">Correo electrónico</label>
+          <input type="email" id="usuario" name="usuario" placeholder="Ingrese su correo" autocomplete="username" required />
           <small class="error" id="usuario-error" aria-live="polite"></small>
         </div>
 
@@ -40,19 +40,81 @@
 
         <button type="submit" class="btn-primary" id="btn-ingresar">Ingresar</button>
 
-        <div class="demo">
-          <span class="demo-label">Demo:</span>
-          <span class="demo-cred">usuario: <code>admin</code></span>
-          <span class="demo-cred">contraseña: <code>admin123</code></span>
-        </div>
-
         <div class="feedback" id="feedback" aria-live="polite" role="status"></div>
       </form>
     </section>
   </main>
 
-  <script src="../Assets/js/app.js"></script>
+  <!-- Script de login con Supabase -->
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    // Configuración de Supabase (usa tu URL y anon key)
+    const supabaseUrl = "https://TU-PROYECTO.supabase.co";
+    const supabaseKey = "TU_ANON_KEY"; // nunca uses la service_role en frontend
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const form = document.getElementById("login-form");
+    const usuarioInput = document.getElementById("usuario");
+    const contrasenaInput = document.getElementById("contrasena");
+    const usuarioError = document.getElementById("usuario-error");
+    const contrasenaError = document.getElementById("contrasena-error");
+    const feedback = document.getElementById("feedback");
+    const btnIngresar = document.getElementById("btn-ingresar");
+
+    function clearErrors() {
+      usuarioError.textContent = "";
+      contrasenaError.textContent = "";
+      feedback.textContent = "";
+      feedback.className = "feedback";
+    }
+
+    function validate() {
+      let valid = true;
+      clearErrors();
+      if (!usuarioInput.value.trim()) {
+        usuarioError.textContent = "El correo es obligatorio.";
+        valid = false;
+      }
+      if (!contrasenaInput.value.trim()) {
+        contrasenaError.textContent = "La contraseña es obligatoria.";
+        valid = false;
+      }
+      return valid;
+    }
+
+    async function login(email, password) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      return data;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!validate()) return;
+
+      btnIngresar.disabled = true;
+      try {
+        const data = await login(usuarioInput.value.trim(), contrasenaInput.value);
+        feedback.textContent = "Ingreso exitoso. Redirigiendo…";
+        feedback.className = "feedback success";
+        // Redirige al menú o dashboard
+        window.location.href = "menu.html";
+      } catch (err) {
+        feedback.textContent = "Credenciales inválidas. Intente nuevamente.";
+        feedback.className = "feedback error";
+        contrasenaInput.value = "";
+        contrasenaInput.focus();
+      } finally {
+        btnIngresar.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
+
 
 

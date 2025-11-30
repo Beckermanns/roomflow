@@ -1,111 +1,127 @@
-// Clave de almacenamiento para la lista de usuarios
-const USUARIOS_KEY = "roomflow_usuarios";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// Índice del usuario que se está editando (null = crear nuevo)
-let editIndex = null;
+const supabase = createClient(
+  "https://wqfitbdetdyohbdxqfap.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxZml0YmRldGR5b2hiZHhxZmFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNzY0ODEsImV4cCI6MjA3OTk1MjQ4MX0.AJlbPq7sQN8XIyxEfUe4LRDm5y5y2RT1xPet3A7AxzY"
+);
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Referencias al DOM
-  const form = document.getElementById("usuario-form");
-  const feedback = document.getElementById("usuario-feedback");
-  const tableBody = document.getElementById("usuario-table-body");
+const form = document.getElementById("usuario-form");
+const feedback = document.getElementById("usuario-feedback");
+const tableBody = document.getElementById("usuario-table-body");
+const btnCrear = document.getElementById("btn-crear");
+const btnBuscar = document.getElementById("btn-buscar");
+const btnGuardar = document.getElementById("btn-guardar");
 
-  // Maneja el envío del formulario de creación/edición de usuarios
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const usuario = {
-      nombre: form.nombre.value,
-      email: form.email.value,
-      rol: form.rol.value,
-      edificio: form.edificio.value,
-      estado: form.estado.value,
-    };
+const rolSelect = document.getElementById("rol");
+const edificioSelect = document.getElementById("edificio");
 
-    const usuarios = JSON.parse(localStorage.getItem(USUARIOS_KEY)) || [];
+let usuarioActual = null;
 
-    if (editIndex !== null) {
-      // Actualiza un usuario existente
-      usuarios[editIndex] = usuario;
-      feedback.textContent = "Usuario actualizado correctamente.";
-    } else {
-      // Crea un nuevo usuario
-      usuarios.push(usuario);
-      feedback.textContent = "Usuario creado correctamente.";
-    }
+// Cargar roles y edificios
+async function cargarOpciones() {
+  const [roles, edificios] = await Promise.all([
+    supabase.from("rol").select("id_rol, nombre_rol"),
+    supabase.from("edificio").select("id_edificio, nombre_edificio")
+  ]);
 
-    // Guarda cambios en localStorage y limpia el formulario
-    localStorage.setItem(USUARIOS_KEY, JSON.stringify(usuarios));
-    form.reset();
-    form.classList.add("hidden");
-    editIndex = null;
-    feedback.className = "feedback success";
-    renderUsuarios();
+  rolSelect.innerHTML = "";
+  roles.data.forEach(r => {
+    const opt = document.createElement("option");
+    opt.value = r.id_rol;
+    opt.textContent = r.nombre_rol;
+    rolSelect.appendChild(opt);
   });
 
-  // Muestra el formulario para crear un nuevo usuario
-  window.mostrarFormulario = () => {
-    form.classList.remove("hidden");
+  edificioSelect.innerHTML = "";
+  edificios.data.forEach(e => {
+    const opt = document.createElement("option");
+    opt.value = e.id_edificio;
+    opt.textContent = e.nombre_edificio;
+    edificioSelect.appendChild(opt);
+  });
+}
+
+// Crear usuario
+btnCrear.addEventListener("click", async () => {
+  const rut = form.rut.value.trim();
+  const usuario = {
+    id_usuario: rut,
+    nombre: form.nombre.value,
+    apellido: form.apellido.value,
+    correo: form.email.value,
+    id_rol: form.rol.value,
+    id_edificio: form.edificio.value,
+    estado: form.estado.value
+  };
+
+  const { error } = await supabase.from("usuario").insert([usuario]);
+  if (error) {
+    feedback.textContent = "Error al crear: " + error.message;
+    feedback.className = "feedback error";
+  } else {
+    feedback.textContent = "Usuario creado correctamente.";
+    feedback.className = "feedback success";
     form.reset();
-    editIndex = null;
-    feedback.textContent = "";
-  };
+  }
+});
 
-  // Rellena y muestra el formulario para editar un usuario existente
-  window.editarUsuario = (index) => {
-    const usuarios = JSON.parse(localStorage.getItem(USUARIOS_KEY)) || [];
-    const u = usuarios[index];
-    form.nombre.value = u.nombre;
-    form.email.value = u.email;
-    form.rol.value = u.rol;
-    form.edificio.value = u.edificio;
-    form.estado.value = u.estado;
-    form.classList.remove("hidden");
-    editIndex = index;
-    feedback.textContent = "";
-  };
+// Buscar usuario por RUT
+btnBuscar.addEventListener("click", async () => {
+  const rut = form.rut.value.trim();
+  const { data, error } = await supabase
+    .from("usuario")
+    .select("*")
+    .eq("id_usuario", rut)
+    .single();
 
-  // Elimina un usuario después de confirmación
-  window.eliminarUsuario = (index) => {
-    const usuarios = JSON.parse(localStorage.getItem(USUARIOS_KEY)) || [];
-    if (confirm("¿Desea eliminar este usuario?")) {
-      usuarios.splice(index, 1);
-      localStorage.setItem(USUARIOS_KEY, JSON.stringify(usuarios));
-      renderUsuarios();
-    }
-  };
-
-  // Renderiza la tabla de usuarios a partir de lo guardado en localStorage
-  function renderUsuarios() {
-    const usuarios = JSON.parse(localStorage.getItem(USUARIOS_KEY)) || [];
-    tableBody.innerHTML = "";
-    usuarios.forEach((u, i) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${u.nombre}</td>
-        <td>${u.email}</td>
-        <td>${u.rol}</td>
-        <td>${u.edificio}</td>
-        <td>${u.estado}</td>
-        <td>
-          <button onclick="editarUsuario(${i})">✏️</button>
-          <button onclick="eliminarUsuario(${i})">🗑️</button>
-        </td>
-      `;
-      tableBody.appendChild(row);
-    });
-
-    // Si no hay usuarios, sembrar datos de ejemplo opcionales
-    if (usuarios.length === 0) {
-      const seed = [
-        { nombre: "Juan Pérez", email: "juan.perez@empresa.com", rol: "Administrador", edificio: "A", estado: "Activo" },
-        { nombre: "María González", email: "maria.gonzalez@empresa.com", rol: "Usuario", edificio: "B", estado: "Activo" },
-        { nombre: "Carlos Ruiz", email: "carlos.ruiz@empresa.com", rol: "Usuario", edificio: "C", estado: "Activo" }
-      ];
-      localStorage.setItem(USUARIOS_KEY, JSON.stringify(seed));
-      renderUsuarios();
-    }
+  if (error || !data) {
+    feedback.textContent = "Usuario no encontrado.";
+    feedback.className = "feedback error";
+    btnGuardar.disabled = true;
+    usuarioActual = null;
+    return;
   }
 
-  // Inicializa la vista al cargar la página
-  renderUsuarios();
+  form.nombre.value = data.nombre;
+  form.apellido.value = data.apellido;
+  form.email.value = data.correo;
+  form.rol.value = data.id_rol;
+  form.edificio.value = data.id_edificio;
+  form.estado.value = data.estado;
+
+  usuarioActual = rut;
+  btnGuardar.disabled = false;
+  feedback.textContent = "Usuario cargado para edición.";
+  feedback.className = "feedback success";
 });
+
+// Guardar cambios
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!usuarioActual) return;
+
+  const usuario = {
+    correo: form.email.value,
+    id_edificio: form.edificio.value,
+    estado: form.estado.value
+  };
+
+  const { error } = await supabase
+    .from("usuario")
+    .update(usuario)
+    .eq("id_usuario", usuarioActual);
+
+  if (error) {
+    feedback.textContent = "Error al guardar: " + error.message;
+    feedback.className = "feedback error";
+  } else {
+    feedback.textContent = "Usuario actualizado correctamente.";
+    feedback.className = "feedback success";
+    form.reset();
+    btnGuardar.disabled = true;
+    usuarioActual = null;
+  }
+});
+
+// Inicializar
+cargarOpciones();

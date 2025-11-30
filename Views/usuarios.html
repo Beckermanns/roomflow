@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!--
-    Vista: Gestión de Usuarios
-    - Contiene el formulario `#usuario-form` (oculto inicialmente) y la tabla `#usuario-table-body`.
-    - `../Assets/js/usuarios.js` maneja crear/editar/eliminar usuarios en localStorage.
-    - Mantener ids del formulario y tabla para que el JS funcione correctamente.
-  -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ROOMFLOW — Gestión de Usuarios</title>
@@ -15,16 +9,23 @@
 <body>
   <header class="menu-header">
     <a href="menu.html" class="btn-volver">← Volver al Menú Principal</a>
-    <button onclick="mostrarFormulario()" class="btn-acceder">Crear Usuario</button>
   </header>
 
   <main class="list-layout">
     <h2>Gestión de Usuarios</h2>
 
-    <form id="usuario-form" class="hidden">
+    <form id="usuario-form">
+      <div class="field">
+        <label for="rut">RUT (sin puntos ni guion)</label>
+        <input type="text" id="rut" required />
+      </div>
       <div class="field">
         <label for="nombre">Nombre</label>
         <input type="text" id="nombre" required />
+      </div>
+      <div class="field">
+        <label for="apellido">Apellido</label>
+        <input type="text" id="apellido" required />
       </div>
       <div class="field">
         <label for="email">Email</label>
@@ -32,18 +33,11 @@
       </div>
       <div class="field">
         <label for="rol">Rol</label>
-        <select id="rol" required>
-          <option value="Usuario">Usuario</option>
-          <option value="Administrador">Administrador</option>
-        </select>
+        <select id="rol" required></select>
       </div>
       <div class="field">
         <label for="edificio">Edificio</label>
-        <select id="edificio" required>
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-        </select>
+        <select id="edificio" required></select>
       </div>
       <div class="field">
         <label for="estado">Estado</label>
@@ -52,25 +46,13 @@
           <option value="Inactivo">Inactivo</option>
         </select>
       </div>
-      <button type="submit" class="btn-primary">Guardar</button>
+      <div class="button-group">
+        <button type="button" id="btn-crear" class="btn-primary">Crear</button>
+        <button type="button" id="btn-buscar" class="btn-primary">Buscar</button>
+        <button type="submit" id="btn-guardar" class="btn-primary" disabled>Guardar</button>
+      </div>
       <div class="feedback" id="usuario-feedback"></div>
     </form>
-
-    <table class="ticket-table">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Email</th>
-          <th>Rol</th>
-          <th>Edificio</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="usuario-table-body"></tbody>
-    </table>
-  </main>
-
-  <script src="../Assets/js/usuarios.js"></script>
+    <script type="module" src="../Assets/js/usuarios.js"></script>
 </body>
 </html>

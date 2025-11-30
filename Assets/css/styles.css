@@ -66,6 +66,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); box-sha
 .menu-card:hover { transform: translateY(-2px); }
 .menu-icon { font-size: 36px; margin-bottom: 12px; }
 .btn-logout { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: background 140ms ease; }
+.btn-crear { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: background 140ms ease; }
+.btn-buscar { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: background 140ms ease;2 }
 .btn-logout:hover { background-color: rgba(255,255,255,0.05); }
 .btn-volver { color: var(--text); text-decoration: none; border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; }
 .btn-volver:hover { background-color: rgba(255,255,255,0.05); }
