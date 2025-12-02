@@ -8,18 +8,23 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header class="dashboard-header">
+ 
+  <header class="menu-header">
     <a href="menu.html" class="btn-volver">← Volver al Menú Principal</a>
     <h1>Análisis de KPIs para Toma de Decisiones</h1>
+    <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
   </header>
 
   <main class="dashboard-layout">
     <section class="filters">
       <div class="filter-row">
         <label for="fecha">Filtrar por fecha:</label>
-        <input type="date" id="fecha" value="2025-11-27" />
-        <button id="btnFiltrar" class="btn-primary">Aplicar filtro</button>
+        <input type="date" id="fecha" value="" />       
       </div>
+      <div class="filter-row">        
+        <input type="date" id="fecha" value="" />
+        <button id="btnFiltrar" class="btn-primary">Aplicar filtro</button>
+      </div>      
     </section>
 
     <section class="kpi-grid">
