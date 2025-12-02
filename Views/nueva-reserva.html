@@ -1,88 +1,61 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <!--
+<head>
+  <!--
     Vista: Nueva Reserva
     - Formulario con id `reserva-form` y campos `recurso`, `fecha`, `horaInicio`, `horaFin`, `motivo`.
     - `../Assets/js/reservas.js` gestiona el guardado en localStorage y el feedback en `#reserva-feedback`.
     - Asegurarse de no cambiar los ids si desea mantener la funcionalidad JS.
   -->
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ROOMFLOW — Nueva Reserva</title>
-    <link rel="stylesheet" href="../Assets/css/styles.css" />
-  </head>
-  <body>
-    <header class="menu-header">
-      <section>
-        <a href="menu.html" style="text-decoration: none">
-          <h1 class="brand">ROOMFLOW</h1>
-        </a>
-      </section>
-      <section>
-        <a href="reservas.html" class="btn-volver"
-          >← Volver a Gestión de Reservas</a
-        >
-        <button class="btn-logout" onclick="cerrarSesion()">
-          Cerrar Sesión
-        </button>
-      </section>
-    </header>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ROOMFLOW — Nueva Reserva</title>
+  <link rel="stylesheet" href="../Assets/css/styles.css" />
+</head>
+<body>
+  <header class="menu-header">
+    <a href="reservas.html" class="btn-volver">← Volver a Gestión de Reservas</a>
+  </header>
 
-    <main class="form-layout">
-      <form id="reserva-form">
-        <h2>Nueva Reserva</h2>
+  <main class="form-layout">
+    <form id="reserva-form">
+      <h2>Nueva Reserva</h2>
 
-        <div class="field">
-          <label for="edificio">Edificio</label>
-          <select id="edificio" required>
-            <option value="" disabled selected hidden>
-              Seleccione un edificio
-            </option>
+      <div class="field">
+        <label for="recurso">Recurso (Sala/Equipo) *</label>
+        <select id="recurso" required>
+          <option value="">Seleccione</option>
+          <option value="Sala A101">Sala A101</option>
+          <option value="Sala B204">Sala B204</option>
+          <option value="Proyector">Proyector</option>
+        </select>
+      </div>
 
-            <option value="Edificio A">Edificio A</option>
-            <option value="Edificio B">Edificio B</option>
-            <option value="Edificio C">Edificio C</option>
-            <option value="Edificio D">Edificio D</option>
-            <option value="Edificio E">Edificio E</option>
-            <option value="Edificio Z">Edificio Z</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="recurso">Recurso (Sala/Equipo) *</label>
-          <select id="recurso" required>
-            <option value="">Seleccione</option>
-            <option value="Sala A101">Sala A101</option>
-            <option value="Sala B204">Sala B204</option>
-            <option value="Proyector">Proyector</option>
-          </select>
-        </div>
+      <div class="field">
+        <label for="fecha">Fecha *</label>
+        <input type="date" id="fecha" required />
+      </div>
 
-        <div class="field">
-          <label for="fecha">Fecha *</label>
-          <input type="date" id="fecha" required />
-        </div>
-        <div class="form-row">
-          <div class="col">
-            <label for="horaInicio">Hora Inicio *</label>
-            <input type="time" id="horaInicio" required />
-          </div>
-          <div class="col">
-            <label for="horaFin">Hora Fin *</label>
-            <input type="time" id="horaFin" required />
-          </div>
-        </div>
+      <div class="field">
+        <label for="horaInicio">Hora Inicio *</label>
+        <input type="time" id="horaInicio" required />
+      </div>
 
-        <div class="field">
-          <label for="motivo">Motivo / Comentario *</label>
-          <textarea id="motivo" rows="3" required></textarea>
-        </div>
+      <div class="field">
+        <label for="horaFin">Hora Fin *</label>
+        <input type="time" id="horaFin" required />
+      </div>
 
-        <button type="submit" class="btn-primary">Confirmar Reserva</button>
-        <div class="feedback" id="reserva-feedback"></div>
-      </form>
-    </main>
+      <div class="field">
+        <label for="motivo">Motivo / Comentario *</label>
+        <textarea id="motivo" rows="3" required></textarea>
+      </div>
 
-    <script src="../Assets/js/reservas.js"></script>
-  </body>
+      <button type="submit" class="btn-primary">Confirmar Reserva</button>
+      <div class="feedback" id="reserva-feedback"></div>
+    </form>
+  </main>
+
+  <script src="../Assets/js/reservas.js"></script>
+</body>
 </html>
