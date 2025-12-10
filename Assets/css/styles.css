@@ -175,3 +175,88 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); box-sha
   display: flex;       
   flex-direction: column; /* Mantiene el label ARRIBA del input */
 }
+
+/* Filtro orizontal aprobacion */
+.FiltroReserva {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.FiltroReserva > div {
+  flex: 1 1 180px;
+  min-width: 180px;
+}
+
+
+.FiltroReserva label {
+  font-size: 13px;
+  margin-bottom: 6px;
+  display: block;
+  color: var(--muted);
+}
+
+.FiltroReserva input,
+.FiltroReserva select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background-color: rgba(15, 23, 42, 0.7);
+  color: var(--text);
+  outline: none;
+}
+
+.FiltroReserva input:focus,
+.FiltroReserva select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+
+/* Tables */
+.reserva-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+.reserva-table th, .reserva-table td { padding: 12px; border: 2px solid var(--border); text-align: left; background-color: rgba(15, 23, 42, 0.7); }
+.reserva-table th { background-color: rgba(15, 23, 42, 0.9); color: var(--muted); }
+.List-reserva { max-width: 4000px; margin: 40px auto; padding: 0 1px; }
+
+
+/* Ancho Orizontal tabla reserva */
+.reserva-table th:nth-child(1), /* ID */
+.reserva-table td:nth-child(1) {
+  width: 150px;
+}
+
+.reserva-table th:nth-child(2), /* Edificio */
+.reserva-table td:nth-child(2) {
+  width: 60px;
+}
+
+.reserva-table th:nth-child(3), /* Espacio */
+.reserva-table td:nth-child(3) {
+  width: 60px;
+}
+
+.reserva-table th:nth-child(4), /* Fecha */
+.reserva-table td:nth-child(4) {
+  width: 200px;
+}
+
+.reserva-table th:nth-child(5), /* Hra_Inicio */
+.reserva-table td:nth-child(5),
+.reserva-table th:nth-child(6), /* Hra_Termino */
+.reserva-table td:nth-child(6) {
+  width: 80px;
+}
+
+.reserva-table th:nth-child(7), /* Motivo */
+.reserva-table td:nth-child(7) {
+  width: 300px;
+}
+
+.reserva-table th:nth-child(8), /* Estado */
+.reserva-table td:nth-child(8) {
+  width: 400px;
+}

@@ -1,8 +1,8 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // Configuración Supabase
 const supabaseUrl = "https://wqfitbdetdyohbdxqfap.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxZml0YmRldGR5b2hiZHhxZmFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNzY0ODEsImV4cCI6MjA3OTk1MjQ4MX0.AJlbPq7sQN8XIyxEfUe4LRDm5y5y2RT1xPet3A7AxzY"; // tu anon key
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxZml0YmRldGR5b2hiZHhxZmFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNzY0ODEsImV4cCI6MjA3OTk1MjQ4MX0.AJlbPq7sQN8XIyxEfUe4LRDm5y5y2RT1xPet3A7AxzY";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Referencias DOM
@@ -52,6 +52,8 @@ async function login(email, password) {
   return data;
 }
 
+
+
 // Logout
 
 function cerrarSesion() {
@@ -67,9 +69,17 @@ form.addEventListener("submit", async (e) => {
 
   btnIngresar.disabled = true;
   try {
-    await login(usuarioInput.value.trim(), contrasenaInput.value);
+    const { session } = await login(usuarioInput.value.trim(), contrasenaInput.value);
+
+    // ⬇️ Guardar ID del usuario logeado
+    const userId = session.user.id;
+    localStorage.setItem("id_user", userId);
+
+    console.log("UUID del usuario guardado:", userId);
+
     feedback.textContent = "Ingreso exitoso. Redirigiendo…";
     feedback.className = "feedback success";
+
     window.location.href = "menu.html";
   } catch (err) {
     feedback.textContent = "Credenciales inválidas. Intente nuevamente.";
