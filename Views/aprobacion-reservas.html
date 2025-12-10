@@ -10,7 +10,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ROOMFLOW — Aprobación de Reservas</title>
-  <link rel="stylesheet" href="../Assets/css/styles.css" />
+  <link rel="stylesheet" href="../Assets/css/styles.css" /> 
 </head>
 <body>
   <header class="menu-header">
@@ -26,23 +26,69 @@
   </header>
 
   <main class="list-layout">
-    <h2>Reservas Pendientes</h2>
-    <table class="ticket-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Recurso</th>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Motivo</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="reserva-table-body"></tbody>
-    </table>
+    <div>
+      <h3>filtros</h3>
+      <div>
+        <div class="FiltroReserva">
+          <div>
+            <label for="idreserva">Id Reserva</label>
+            <input id="idreservaFiltro" >                      
+            </select>
+          </div>
+          <div>
+            <label for="edificio">Edificio</label>
+            <select id="edificioFiltro" >                      
+            </select>
+          </div>
+          <div>
+            <label for="espacio">Espacio</label>
+            <select id="espacioFiltro" >                              
+            </select>
+          </div>          
+          <div> 
+            </select>
+            <label for="estado">Estado</label>
+            <select id="estado" required>
+              <option value=""></option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Aprobada">Aprobada</option>
+              <option value="Rechazada">Rechazada</option>                              
+            </select>
+          </div>                 
+          <div>
+            <label for="fechaDesde">Desde</label>
+            <input type="date" id="fechaDesde" />
+          </div>
+          <div>
+            <label for="fechaHasta">Hasta</label>
+            <input type="date" id="fechaHasta" />
+          </div>
+          <div>
+            <button type="submit" class="btn-primary">Buscar</button>
+          </div>
+        
+      </div>
+    </div>
+    <main class="List-reserva">
+      <h2>Reservas Pendientes</h2>
+      <table class="reserva-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Edificio</th>
+            <th>Espacio</th>
+            <th>Fecha</th>
+            <th>Hra_Inicio</th>
+            <th>Hra_Termino</th>
+            <th>Motivo</th>
+            <th>Estado</th>            
+          </tr>
+        </thead>
+        <tbody id="reserva-table-body"></tbody>
+      </table>
+    </main>
   </main>
 
-  <script src="../Assets/js/reservas.js"></script>
+  <script type="module" src="../Assets/js/aprobacion-reserva.js"></script>
 </body>
 </html>

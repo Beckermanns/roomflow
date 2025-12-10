@@ -1,4 +1,4 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabase = createClient(
   "https://wqfitbdetdyohbdxqfap.supabase.co",
@@ -13,7 +13,7 @@ const btnBuscar = document.getElementById("btn-buscar");
 const btnGuardar = document.getElementById("btn-guardar");
 
 const rolSelect = document.getElementById("rol");
-const edificioSelect = document.getElementById("edificio");
+const edificioSelect = document.getElementById("edificio"); 
 
 let usuarioActual = null;
 
