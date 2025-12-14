@@ -10,6 +10,15 @@ const espacioSelect = document.getElementById("recurso");
 const form = document.getElementById("reserva-form");
 const feedback = document.getElementById("reserva-feedback");
 
+// Logout
+
+window.cerrarSesion = function () {
+  localStorage.removeItem("id_user");
+  alert("Sesión cerrada.");
+  // Redirige al index (página de login)
+  window.location.href = "index.html";
+};
+
 // Obtener usuario logeado desde localStorage
 const idusuarioLogeado = localStorage.getItem("id_user");
 if (!idusuarioLogeado) {
@@ -22,6 +31,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   espacioSelect.disabled = true;
   espacioSelect.innerHTML = `<option value="">Seleccione</option>`;
   await cargarEdificios();
+
+  // Bloquear fechas anteriores a hoy
+  const fechaInput = document.getElementById("fecha");
+  const hoy = new Date().toISOString().split("T")[0];
+  fechaInput.min = hoy;
 });
 
 // Cargar edificios
@@ -108,26 +122,52 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  // Verificar solapamiento
-  const { data: reservasExistentes, error: errorSolapamiento } = await supabase
-    .from("reserva")
-    .select("hra_inicio, hra_termino")
-    .eq("id_espacio", id_espacio)
-    .eq("fecha_reserva", fecha_reserva);
+  // Validar fecha >= hoy
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
 
-  if (errorSolapamiento) {
-    console.error("Error verificando solapamiento:", errorSolapamiento);
+  const fechaSeleccionada = new Date(fecha_reserva);
+  fechaSeleccionada.setHours(0, 0, 0, 0);
+
+  if (fechaSeleccionada < hoy) {
+    feedback.textContent = "No se pueden realizar reservas en fechas anteriores a hoy.";
+    return;
+  }
+
+  // Construir DateTime reales
+  const inicioNueva = new Date(`${fecha_reserva}T${horaInicio}`);
+  let terminoNueva = new Date(`${fecha_reserva}T${horaFin}`);
+
+  // Si termina al día siguiente
+  if (horaFin <= horaInicio) {
+    terminoNueva.setDate(terminoNueva.getDate() + 1);
+  }
+
+   // Validar hora
+  if (horaFin <= horaInicio) {
+    feedback.textContent = "La hora de término debe ser mayor que la hora de inicio.";
+    return;
+  }
+
+  // Verificar solapamiento
+  const { data: reservasExistentes, error } = await supabase
+  .from("reserva")
+  .select("hra_inicio, hra_termino")
+  .eq("id_espacio", id_espacio)
+  .eq("fecha_reserva", fecha_reserva);
+
+  if (error) {
     feedback.textContent = "Error al verificar disponibilidad.";
     return;
   }
 
   const conflicto = reservasExistentes.some(r =>
-    (horaInicio < r.hra_termino && horaFin > r.hra_inicio)
+  horaInicio < r.hra_termino && horaFin > r.hra_inicio
   );
 
   if (conflicto) {
-    feedback.textContent = "Ya existe una reserva para ese espacio en ese horario.";
-    return;
+  feedback.textContent = "El espacio ya está reservado en ese horario.";
+  return;
   }
 
   // Insertar reserva
@@ -141,19 +181,19 @@ form.addEventListener("submit", async (e) => {
       hra_termino: horaFin,
       observacion,
       estado: "Pendiente",
-      id_solicitante: idusuarioLogeado, // tomado de localStorage
+      id_solicitante: idusuarioLogeado,
       id_aprobador: null
     }])
     .select("id_corto")
     .single();
 
-  if (errorInsert) {
-    console.error("Error creando reserva:", errorInsert);
-    feedback.textContent = "No se pudo crear la reserva.";
-    return;
-  }
+    if (errorInsert) {
+      console.error(errorInsert);
+      feedback.textContent = "No se pudo crear la reserva.";
+      return;
+    }
 
-  feedback.textContent = `Reserva creada exitosamente. ID: ${nuevaReserva.id_corto}`;
-  form.reset();
-  espacioSelect.disabled = true;
+    feedback.textContent = `Reserva creada exitosamente. ID: ${nuevaReserva.id_corto}`;
+    form.reset();
+    espacioSelect.disabled = true;
 });

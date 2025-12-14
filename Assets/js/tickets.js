@@ -297,7 +297,6 @@ async function cargarEspaciosPorEdificio(edificioId) {
 });
 
 // Logout
-
 function cerrarSesion() {
   alert("Sesión cerrada.");
   // Redirige al index (página de login)

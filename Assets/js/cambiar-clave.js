@@ -12,7 +12,7 @@ const feedback = document.getElementById("feedback");
 const btnCambiar = document.getElementById("btn-cambiar");
 const togglePassword = document.getElementById("toggle-password");
 
-// 👁️ Mostrar/Ocultar contraseña
+// Mostrar/Ocultar contraseña
 togglePassword.addEventListener("click", () => {
   const visible = claveInput.type === "text";
   claveInput.type = visible ? "password" : "text";
@@ -25,10 +25,10 @@ function clearMessages() {
   feedback.className = "feedback";
 }
 
-
 // Logout
 
 function cerrarSesion() {
+  localStorage.removeItem("id_user");
   alert("Sesión cerrada.");
   // Redirige al index (página de login)
   window.location.href = "index.html";

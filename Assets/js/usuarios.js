@@ -11,7 +11,6 @@ const tableBody = document.getElementById("usuario-table-body");
 const btnCrear = document.getElementById("btn-crear");
 const btnBuscar = document.getElementById("btn-buscar");
 const btnGuardar = document.getElementById("btn-guardar");
-
 const rolSelect = document.getElementById("rol");
 const edificioSelect = document.getElementById("edificio"); 
 
@@ -41,13 +40,11 @@ async function cargarOpciones() {
   });
 }
 
-
-
 // Crear usuario
 btnCrear.addEventListener("click", async () => {
   const rut = form.rut.value.trim();
 
-  // 1. Crear usuario en Auth
+  // Crear usuario en Auth
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email: form.email.value,
     password: "Temporal123."  // contraseña provisional
@@ -61,7 +58,7 @@ btnCrear.addEventListener("click", async () => {
 
   const id_user = authData.user.id;
 
-  // 2. Insertar en tabla usuario
+  // Insertar en tabla usuario
   const usuario = {
     id_user,
     rut,
@@ -144,14 +141,12 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-
-
 // Inicializar
 cargarOpciones();
 
 // Logout
-
 window.cerrarSesion = function () {
+  localStorage.removeItem("id_user");
   alert("Sesión cerrada.");
   // Redirige al index (página de login)
   window.location.href = "index.html";
