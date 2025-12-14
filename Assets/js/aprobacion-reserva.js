@@ -24,13 +24,23 @@ const tablaBody = document.getElementById("reserva-table-body");
 // Inicializar filtros
 document.addEventListener("DOMContentLoaded", async () => {
   await cargarEdificios();
+
   edificioFiltro.addEventListener("change", async (e) => {
     await cargarEspaciosPorEdificio(e.target.value);
+    espacioFiltro.value = ""; // reset espacio seleccionado
   });
+
+  // Restricción de fechas
+  fechaDesde.addEventListener("change", () => {
+    fechaHasta.min = fechaDesde.value;
+    fechaHasta.value = ""; // opcional: limpia la fecha hasta
+  });
+
   buscarBtn.addEventListener("click", async () => {
     await cargarReservasFiltradas();
   });
-  await cargarReservasFiltradas(); // carga inicial
+
+  await cargarReservasFiltradas();
 });
 
 // Cargar edificios
@@ -40,7 +50,10 @@ async function cargarEdificios() {
     .select("id_edificio, nombre_edificio")
     .order("nombre_edificio", { ascending: true });
 
-  if (error) return console.error("Error edificios:", error);
+   if (error) {
+    console.error("Error edificios:", error);
+    return;
+  }
 
   edificioFiltro.innerHTML = `<option value="">Todos</option>`;
   data.forEach((ed) => {
@@ -53,15 +66,21 @@ async function cargarEdificios() {
 
 // Cargar espacios por edificio
 async function cargarEspaciosPorEdificio(edificioId) {
+  espacioFiltro.innerHTML = `<option value="">Todos</option>`;
+
+  if (!edificioId) return;
+
   const { data, error } = await supabase
     .from("espacio")
     .select("id_espacio, nombre_espacio")
     .eq("id_edificio", edificioId)
     .order("nombre_espacio", { ascending: true });
 
-  if (error) return console.error("Error espacios:", error);
+  if (error) {
+    console.error("Error espacios:", error);
+    return;
+  }
 
-  espacioFiltro.innerHTML = `<option value="">Todos</option>`;
   data.forEach((esp) => {
     const opt = document.createElement("option");
     opt.value = esp.id_espacio;
@@ -70,39 +89,97 @@ async function cargarEspaciosPorEdificio(edificioId) {
   });
 }
 
+// Obtener espacios de un edificio (para filtro reservas)
+async function obtenerEspaciosPorEdificio(edificioId) {
+  const { data, error } = await supabase
+    .from("espacio")
+    .select("id_espacio")
+    .eq("id_edificio", edificioId);
+
+  if (error) {
+    console.error("Error espacios por edificio:", error);
+    return [];
+  }
+
+  return data.map(e => e.id_espacio);
+}
+
 // Cargar reservas filtradas
 async function cargarReservasFiltradas() {
+
+  // Validación fechas
+  if (
+    (fechaDesde.value && !fechaHasta.value) ||
+    (!fechaDesde.value && fechaHasta.value)
+  ) {
+    alert("Debe ingresar Fecha Desde y Fecha Hasta");
+    return;
+  }
+
+  if (fechaDesde.value && fechaHasta.value && fechaHasta.value < fechaDesde.value) {
+    alert("La Fecha Hasta no puede ser menor que la Fecha Desde");
+    return;
+  }
+
   let query = supabase
     .from("reserva")
     .select(`
-      id_reserva, id_corto, fecha_reserva, hra_inicio, hra_termino, observacion, estado,
-      espacio(id_espacio, nombre_espacio, edificio(nombre_edificio))
-    `)
-    .eq("estado", "Pendiente");
+      id_reserva,
+      id_corto,
+      fecha_reserva,
+      hra_inicio,
+      hra_termino,
+      observacion,
+      estado,
+      id_espacio,
+      espacio (
+        nombre_espacio,
+        edificio (
+          nombre_edificio
+        )
+      )
+    `);
 
-  if (idReservaFiltro.value)
+  // Filtros independientes
+  if (idReservaFiltro.value) {
     query = query.eq("id_corto", idReservaFiltro.value.trim());
+  }
 
-  if (edificioFiltro.value)
-    query = query.eq("espacio.edificio.id_edificio", edificioFiltro.value);
-
-  if (espacioFiltro.value)
-    query = query.eq("id_espacio", espacioFiltro.value);
-
-  if (estadoFiltro.value)
+  if (estadoFiltro.value) {
     query = query.eq("estado", estadoFiltro.value);
+  }
 
-  if (fechaDesde.value)
-    query = query.gte("fecha_reserva", fechaDesde.value);
+  if (espacioFiltro.value) {
+    query = query.eq("id_espacio", espacioFiltro.value);
+  }
 
-  if (fechaHasta.value)
-    query = query.lte("fecha_reserva", fechaHasta.value);
+  if (edificioFiltro.value && !espacioFiltro.value) {
+    const espacios = await obtenerEspaciosPorEdificio(edificioFiltro.value);
+
+    if (espacios.length === 0) {
+      tablaBody.innerHTML = "";
+      return;
+    }
+
+    query = query.in("id_espacio", espacios);
+  }
+
+  if (fechaDesde.value && fechaHasta.value) {
+    query = query
+      .gte("fecha_reserva", fechaDesde.value)
+      .lte("fecha_reserva", fechaHasta.value);
+  }
 
   const { data, error } = await query;
 
-  if (error) return console.error("Error reservas:", error);
+  if (error) {
+    console.error("Error reservas:", error);
+    return;
+  }
 
+  // Limpiar tabla
   tablaBody.innerHTML = "";
+
   data.forEach((r) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -112,37 +189,22 @@ async function cargarReservasFiltradas() {
       <td>${r.fecha_reserva}</td>
       <td>${r.hra_inicio}</td>
       <td>${r.hra_termino}</td>
-      <td>${r.observacion}</td>
+      <td>${r.observacion || ""}</td>
       <td>
         <select class="estado-select" data-id="${r.id_reserva}">
           <option value="Pendiente" ${r.estado === "Pendiente" ? "selected" : ""}>Pendiente</option>
-          <option value="Aprobada">Aprobada</option>
-          <option value="Rechazada">Rechazada</option>
+          <option value="Aprobada" ${r.estado === "Aprobada" ? "selected" : ""}>Aprobada</option>
+          <option value="Rechazada" ${r.estado === "Rechazada" ? "selected" : ""}>Rechazada</option>
         </select>
-      </td>      
+      </td>
     `;
     tablaBody.appendChild(tr);
   });
-
-  document.querySelectorAll(".estado-select").forEach((select) => {
-    select.addEventListener("change", async (e) => {
-      const id = e.target.dataset.id;
-      const nuevoEstado = e.target.value;
-      const msgSpan = document.getElementById(`msg-${id}`);
-
-      const { error } = await supabase
-        .from("reserva")
-        .update({ estado: nuevoEstado, id_aprobador: idusuarioLogeado })
-        .eq("id_reserva", id);
-
-      if (error) {
-        msgSpan.textContent = "Error al guardar";
-        msgSpan.style.color = "red";
-        console.error("Error actualizando estado:", error);
-      } else {
-        msgSpan.textContent = "Se guardaron los cambios";
-        msgSpan.style.color = "green";
-      }
-    });
-  });
 }
+
+// Logout
+window.cerrarSesion = function () {
+  localStorage.removeItem("id_user");
+  alert("Sesión cerrada.");
+  window.location.href = "index.html";
+};
