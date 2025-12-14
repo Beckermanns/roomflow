@@ -226,40 +226,105 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); box-sha
 .List-reserva { max-width: 4000px; margin: 40px auto; padding: 0 1px; }
 
 
-/* Ancho Orizontal tabla reserva */
-.reserva-table th:nth-child(1), /* ID */
-.reserva-table td:nth-child(1) {
-  width: 150px;
+/* =========================================
+   CORRECCIÓN TABLA TICKETS (ROOMFLOW)
+   ========================================= */
+
+.reserva-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 12px;
+  /* VITAL: Esto obliga al navegador a respetar los anchos que definimos abajo */
+  table-layout: fixed; 
 }
 
-.reserva-table th:nth-child(2), /* Edificio */
-.reserva-table td:nth-child(2) {
-  width: 60px;
+/* --- Definición de Anchos por Columna --- */
+
+/* 1. ID (Corto) */
+.reserva-table th:nth-child(1), .reserva-table td:nth-child(1) { width: 90px; }
+
+/* 2. Edificio (Muy corto) */
+.reserva-table th:nth-child(2), .reserva-table td:nth-child(2) { width: 60px; }
+
+/* 3. Espacio (Muy corto) */
+.reserva-table th:nth-child(3), .reserva-table td:nth-child(3) { width: 70px; }
+
+/* 4. Tipo */
+.reserva-table th:nth-child(4), 
+.reserva-table td:nth-child(4) { 
+    width: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Esto agrega "..." si el texto es muy largo */
 }
 
-.reserva-table th:nth-child(3), /* Espacio */
-.reserva-table td:nth-child(3) {
-  width: 60px;
-}
+/* 5. DESCRIPCIÓN (Largo - Variable) */
+.reserva-table th:nth-child(5), .reserva-table td:nth-child(5) { width: 20%; }
 
-.reserva-table th:nth-child(4), /* Fecha */
-.reserva-table td:nth-child(4) {
-  width: 200px;
-}
+/* 6. Prioridad (Corto) */
+.reserva-table th:nth-child(6), .reserva-table td:nth-child(6) { width: 80px; }
 
-.reserva-table th:nth-child(5), /* Hra_Inicio */
+/* 7. Estado (Medio) */
+.reserva-table th:nth-child(7), .reserva-table td:nth-child(7) { width: 100px; }
+
+/* 8. Fecha Solicitud (Fecha) */
+.reserva-table th:nth-child(8), .reserva-table td:nth-child(8) { width: 110px; }
+
+/* 9. Asignado (Nombre corto/Medio) */
+.reserva-table th:nth-child(9), .reserva-table td:nth-child(9) { width: 100px; }
+
+/* 10. Acciones (Botones) */
+.reserva-table th:nth-child(10), .reserva-table td:nth-child(10) { width: 90px; }
+
+/* 11. MOTIVO CIERRE (El resto del espacio) */
+.reserva-table th:nth-child(11), .reserva-table td:nth-child(11) { width: auto; }
+
+
+/* --- Truco para que el texto no infle la celda hacia abajo --- */
+/* Aplicamos esto a Descripción (5) y Motivo Cierre (11) */
 .reserva-table td:nth-child(5),
-.reserva-table th:nth-child(6), /* Hra_Termino */
-.reserva-table td:nth-child(6) {
-  width: 80px;
+.reserva-table td:nth-child(11) {
+    white-space: nowrap;       /* Evita que el texto baje a otra línea */
+    overflow: hidden;          /* Oculta lo que se sale */
+    text-overflow: ellipsis;   /* Pone "..." al final */
 }
 
-.reserva-table th:nth-child(7), /* Motivo */
-.reserva-table td:nth-child(7) {
-  width: 300px;
+/* Opcional: Mostrar texto completo al pasar el mouse (tooltip nativo) */
+.reserva-table td:nth-child(5):hover,
+.reserva-table td:nth-child(11):hover {
+    /* Si quieres que se expanda al pasar el mouse, descomenta esto,
+       pero puede romper el diseño momentáneamente: */
+    /* white-space: normal; overflow: visible; */
+    cursor: help;
 }
 
-.reserva-table th:nth-child(8), /* Estado */
-.reserva-table td:nth-child(8) {
-  width: 400px;
+/* Estilos básicos para el modal */
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1000; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  background-color: rgba(0,0,0,0.5); /* Fondo oscuro transparente */
+}
+
+.modal-content {
+  background-color: #fff; /* O el color oscuro de tu tema: #1e293b */
+  margin: 10% auto; /* Centrado vertical */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 90%; 
+  border-radius: 8px;
+  color: #000; /* O blanco si usas tema oscuro */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
 }

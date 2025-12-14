@@ -20,7 +20,7 @@
       </a>
     </section>
     <section>
-      <a href="tickets.html" class="btn-volver">← Volver a Gestión de Tickets</a>
+      <a href="tickets.html" class="btn-volver">← Menú Tickets</a>
       <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
     </section>
   </header>
@@ -39,13 +39,8 @@
           </select>
         </div>
       <div class="field">
-        <label for="tipo">Tipo de requerimiento *</label>
-        <select id="tipo" required>
-          <option value="">Seleccione</option>
-          <option value="infraestructura">Infraestructura</option>
-          <option value="tecnología">Tecnología</option>
-          <option value="limpieza">Limpieza</option>
-          <option value="soporte">Soporte</option>
+        <label for="requerimiento">Tipo de requerimiento *</label>
+        <select id="requerimiento" required>
         </select>
       </div>
 
@@ -57,16 +52,7 @@
       <div class="field">
         <label for="prioridad">Prioridad *</label>
         <select id="prioridad" required>
-          <option value="">Seleccione</option>
-          <option value="alta">Alta</option>
-          <option value="media">Media</option>
-          <option value="baja">Baja</option>
         </select>
-      </div>
-
-      <div class="field">
-        <label for="archivo">Adjuntar archivo (opcional)</label>
-        <input type="file" id="archivo" accept=".jpg,.png,.pdf,.docx" />
       </div>
 
       <button type="submit" class="btn-primary">Enviar Ticket</button>
