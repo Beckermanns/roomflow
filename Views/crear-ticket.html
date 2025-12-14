@@ -27,22 +27,17 @@
   <main class="form-layout">
     <form id="ticket-form" enctype="multipart/form-data">
       <h2>Crear Ticket</h2>
-
-      <div class="field">
-        <label for="edificio">Edificio *</label>
-        <select id="edificio" required>
-          <option value="">Seleccione</option>
-          <option value="A">Edificio A</option>
-          <option value="B">Edificio B</option>
-          <option value="C">Edificio C</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="espacio">Espacio *</label>
-        <input type="text" id="espacio" placeholder="Ej. Sala 204" required />
-      </div>
-
+      
+        <div class="field">
+          <label for="edificio">Edificio</label>
+          <select id="edificio" required>                      
+          </select>
+        </div>
+        <div class="field">
+          <label for="recurso">Espacio</label>
+          <select id="recurso" required>                  
+          </select>
+        </div>
       <div class="field">
         <label for="tipo">Tipo de requerimiento *</label>
         <select id="tipo" required>
