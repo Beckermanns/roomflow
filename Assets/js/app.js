@@ -15,14 +15,14 @@ const feedback = document.getElementById("feedback");
 const btnIngresar = document.getElementById("btn-ingresar");
 const togglePassword = document.getElementById("toggle-password");
 
-// 👁️ Mostrar/Ocultar contraseña
+// Mostrar/Ocultar contraseña
 togglePassword.addEventListener("click", () => {
   const visible = contrasenaInput.type === "text";
   contrasenaInput.type = visible ? "password" : "text";
   togglePassword.textContent = visible ? "👁️" : "🙈";
 });
 
-// 🧼 Limpiar mensajes
+// Limpiar mensajes
 function clearErrors() {
   usuarioError.textContent = "";
   contrasenaError.textContent = "";
@@ -30,7 +30,7 @@ function clearErrors() {
   feedback.className = "feedback";
 }
 
-// ✅ Validación
+// Validación
 function validate() {
   let valid = true;
   clearErrors();
@@ -45,7 +45,7 @@ function validate() {
   return valid;
 }
 
-// 🔑 Login con Supabase
+// Login con Supabase
 async function login(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
@@ -57,12 +57,13 @@ async function login(email, password) {
 // Logout
 
 function cerrarSesion() {
+  localStorage.removeItem("id_user");
   alert("Sesión cerrada.");
   // Redirige al index (página de login)
   window.location.href = "index.html";
 }
 
-// 🚀 Manejo de envío
+// Manejo de envío
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!validate()) return;
