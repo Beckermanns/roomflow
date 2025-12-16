@@ -52,8 +52,6 @@ async function login(email, password) {
   return data;
 }
 
-
-
 // Logout
 
 function cerrarSesion() {
@@ -72,7 +70,7 @@ form.addEventListener("submit", async (e) => {
   try {
     const { session } = await login(usuarioInput.value.trim(), contrasenaInput.value);
 
-    // ⬇️ Guardar ID del usuario logeado
+    // Guardar ID del usuario logeado
     const userId = session.user.id;
     localStorage.setItem("id_user", userId);
 
