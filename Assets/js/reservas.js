@@ -145,7 +145,7 @@ form.addEventListener("submit", async (e) => {
 
    // Validar hora
   if (horaFin <= horaInicio) {
-    feedback.textContent = "La hora de término debe ser mayor que la hora de inicio.";
+    feedback.textContent = "La hora de término debe ser posterior que la hora de inicio.";
     return;
   }
 

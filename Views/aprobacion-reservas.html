@@ -1,18 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!--
-    Vista: Aprobación de Reservas
-    - Muestra las reservas pendientes en el <tbody id="reserva-table-body">.
-    - Lógica de carga/validación/aprobación en `../Assets/js/reservas.js`.
-    - No modificar el id del tbody si se desea mantener la funcionalidad.
-  -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ROOMFLOW — Aprobación de Reservas</title>
-  <link rel="stylesheet" href="../Assets/css/styles.css" /> 
+  <link rel="stylesheet" href="../Assets/css/styles.css" />
 </head>
 <body>
+
   <header class="menu-header">
     <section>
       <a href="menu.html" style="text-decoration: none;">
@@ -25,52 +20,61 @@
     </section>
   </header>
 
-  <main class="list-layout">
+  <!-- MISMO CONTENEDOR QUE TICKETS -->
+  <main class="list-layout" style="max-width: 80%; margin: 32px auto; padding: 0 24px;">
+
+    <!-- FILTROS -->
     <div>
-      <h3>filtros</h3>
-      <div>
-        <div class="FiltroReserva">
-          <div>
-            <label for="idreserva">Id Reserva</label>
-            <input id="idreservaFiltro" >                      
-            </select>
-          </div>
-          <div>
-            <label for="edificio">Edificio</label>
-            <select id="edificioFiltro" >                      
-            </select>
-          </div>
-          <div>
-            <label for="espacio">Espacio</label>
-            <select id="espacioFiltro" >                              
-            </select>
-          </div>          
-          <div> 
-            </select>
-            <label for="estado">Estado</label>
-            <select id="estado" required>
-              <option value=""></option>
-              <option value="Pendiente">Pendiente</option>
-              <option value="Aprobada">Aprobada</option>
-              <option value="Rechazada">Rechazada</option>                              
-            </select>
-          </div>                 
-          <div>
-            <label for="fechaDesde">Desde</label>
-            <input type="date" id="fechaDesde" />
-          </div>
-          <div>
-            <label for="fechaHasta">Hasta</label>
-            <input type="date" id="fechaHasta" />
-          </div>
-          <div>
-            <button type="submit" class="btn-primary">Buscar</button>
-          </div>
-        
+      <h3>Filtros</h3>
+      <div class="FiltroReserva">
+
+        <div>
+          <label for="idreservaFiltro">ID Reserva</label>
+          <input type="text" id="idreservaFiltro" placeholder="Buscar por ID" />
+        </div>
+
+        <div>
+          <label for="edificioFiltro">Edificio</label>
+          <select id="edificioFiltro"></select>
+        </div>
+
+        <div>
+          <label for="espacioFiltro">Espacio</label>
+          <select id="espacioFiltro"></select>
+        </div>
+
+        <div>
+          <label for="estado">Estado</label>
+          <select id="estado">
+            <option value="">Todos</option>
+            <option value="Pendiente">Pendiente</option>
+            <option value="Aprobada">Aprobada</option>
+            <option value="Rechazada">Rechazada</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="fechaDesde">Desde</label>
+          <input type="date" id="fechaDesde" />
+        </div>
+
+        <div>
+          <label for="fechaHasta">Hasta</label>
+          <input type="date" id="fechaHasta" />
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn-primary" id="btnBuscar">Buscar</button>
+          <button type="button" class="btn-primary" id="btnLimpiar">Limpiar</button>
+        </div>
+
       </div>
     </div>
-    <main class="List-reserva">
-      <h2>Reservas Pendientes</h2>
+
+    <!-- TABLA (MISMO FORMATO QUE TICKETS) -->
+    <main class="List-reserva" style="max-width: 100%; margin: 40px auto;">
+      <h2>Reservas</h2>
+
       <table class="reserva-table">
         <thead>
           <tr>
@@ -78,15 +82,16 @@
             <th>Edificio</th>
             <th>Espacio</th>
             <th>Fecha</th>
-            <th>Hra_Inicio</th>
-            <th>Hra_Termino</th>
+            <th>Hora Inicio</th>
+            <th>Hora Término</th>
             <th>Motivo</th>
-            <th>Estado</th>            
+            <th>Estado</th>
           </tr>
         </thead>
         <tbody id="reserva-table-body"></tbody>
       </table>
     </main>
+
   </main>
 
   <script type="module" src="../Assets/js/aprobacion-reserva.js"></script>
