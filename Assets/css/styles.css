@@ -328,3 +328,72 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); box-sha
   font-weight: bold;
   cursor: pointer;
 }
+
+/* ESTILO TABLA APROBACIÓN DE RESERVAS –  (AISLADO) */
+
+.aprobacion-reservas {
+  padding: 20px;
+}
+
+/* Contenedor tabla */
+.aprobacion-reservas .tabla-wrapper {
+  background: #1e1e1e;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.35);
+  overflow-x: auto;
+}
+
+/* Tabla */
+.aprobacion-reservas table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+/* Encabezado */
+.aprobacion-reservas thead th {
+  background: #2a2a2a;
+  color: #ffffff;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Celdas */
+.aprobacion-reservas tbody td {
+  padding: 12px 14px;
+  color: #e6e6e6;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 0.9rem;
+}
+
+/* Hover fila */
+.aprobacion-reservas tbody tr:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+/* Select estado */
+.aprobacion-reservas .estado-select {
+  background: #111;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Estado visual */
+.aprobacion-reservas .estado-select:focus {
+  outline: none;
+  border-color: #4f9cff;
+}
+
+/* Responsive suave */
+@media (max-width: 768px) {
+  .aprobacion-reservas table {
+    min-width: 700px;
+  }
+}

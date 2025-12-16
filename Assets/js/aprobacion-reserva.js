@@ -19,6 +19,7 @@ const idReservaFiltro = document.getElementById("idreservaFiltro");
 const fechaDesde = document.getElementById("fechaDesde");
 const fechaHasta = document.getElementById("fechaHasta");
 const buscarBtn = document.querySelector(".btn-primary");
+const limpiarBtn = document.getElementById("btnLimpiar");
 const tablaBody = document.getElementById("reserva-table-body");
 
 // Inicializar filtros
@@ -28,7 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   edificioFiltro.addEventListener("change", async (e) => {
     await cargarEspaciosPorEdificio(e.target.value);
     espacioFiltro.value = ""; // reset espacio seleccionado
-  });
+  });  
 
   // Restricción de fechas
   fechaDesde.addEventListener("change", () => {
@@ -41,6 +42,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   await cargarReservasFiltradas();
+
+  limpiarBtn.addEventListener("click", async () => {
+  // Limpiar inputs
+  idReservaFiltro.value = "";
+  edificioFiltro.value = "";
+  espacioFiltro.innerHTML = `<option value="">Todos</option>`;
+  estadoFiltro.value = "";
+  fechaDesde.value = "";
+  fechaHasta.value = "";
+  fechaHasta.min = "";
+
+  // Recargar reservas como al inicio
+  await cargarReservasFiltradas();
+  });
 });
 
 // Cargar edificios
@@ -122,23 +137,33 @@ async function cargarReservasFiltradas() {
   }
 
   let query = supabase
-    .from("reserva")
-    .select(`
-      id_reserva,
-      id_corto,
-      fecha_reserva,
-      hra_inicio,
-      hra_termino,
-      observacion,
-      estado,
-      id_espacio,
-      espacio (
-        nombre_espacio,
-        edificio (
-          nombre_edificio
-        )
+  .from("reserva")
+  .select(`
+    id_reserva,
+    id_corto,
+    fecha_reserva,
+    hra_inicio,
+    hra_termino,
+    observacion,
+    estado,
+    id_espacio,
+    espacio (
+      nombre_espacio,
+      edificio (
+        nombre_edificio
       )
-    `);
+    )
+  `);
+
+// 🔹 ESTADO POR DEFECTO: Pendiente
+if (!estadoFiltro.value) {
+  query = query.eq("estado", "Pendiente");
+} else {
+  query = query.eq("estado", estadoFiltro.value);
+}
+
+// 🔹 ORDENAR POR FECHA (más reciente primero)
+query = query.order("fecha_reserva", { ascending: false });
 
   // Filtros independientes
   if (idReservaFiltro.value) {
@@ -191,7 +216,7 @@ async function cargarReservasFiltradas() {
       <td>${r.hra_termino}</td>
       <td>${r.observacion || ""}</td>
       <td>
-        <select class="estado-select" data-id="${r.id_reserva}">
+        <select class="estado-select" data-id="${r.id_reserva}" data-estado-original="${r.estado}">
           <option value="Pendiente" ${r.estado === "Pendiente" ? "selected" : ""}>Pendiente</option>
           <option value="Aprobada" ${r.estado === "Aprobada" ? "selected" : ""}>Aprobada</option>
           <option value="Rechazada" ${r.estado === "Rechazada" ? "selected" : ""}>Rechazada</option>
@@ -199,6 +224,10 @@ async function cargarReservasFiltradas() {
       </td>
     `;
     tablaBody.appendChild(tr);
+
+    const selectEstado = tr.querySelector(".estado-select");
+    selectEstado.addEventListener("change", () =>
+      cambiarEstadoReserva(selectEstado));
   });
 }
 
@@ -208,3 +237,41 @@ window.cerrarSesion = function () {
   alert("Sesión cerrada.");
   window.location.href = "index.html";
 };
+
+// Manejar cambio de estado
+async function cambiarEstadoReserva(select) {
+  const idReserva = select.dataset.id;
+  const estadoAnterior = select.dataset.estadoOriginal;
+  const nuevoEstado = select.value;
+
+  const confirmar = confirm(
+    `¿Confirma cambiar el estado de la reserva a "${nuevoEstado}"?`
+  );
+
+  // Cancela → vuelve al estado anterior
+  if (!confirmar) {
+    select.value = estadoAnterior;
+    return;
+  }
+
+  // Actualiza en BBDD
+  const { error } = await supabase
+    .from("reserva")
+    .update({ estado: nuevoEstado })
+    .eq("id_reserva", idReserva);
+
+  if (error) {
+    alert("Error al actualizar el estado");
+    console.error(error);
+    select.value = estadoAnterior;
+    return;
+  }
+
+  alert("Estado actualizado correctamente");
+
+  // Actualizamos el estado original
+  select.dataset.estadoOriginal = nuevoEstado;
+
+  // Recargar tabla (para que desaparezca si ya no es Pendiente)
+  await cargarReservasFiltradas();
+}
