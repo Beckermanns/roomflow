@@ -338,6 +338,7 @@ window.confirmarCierre = async function () {
         estado: "cerrado",
         motivo_cierre: motivo,
         id_cierre: idusuarioLogeado,
+        fecha_cierre_solicitud: new Date().toISOString()
       })
       .eq("id_ticket", ticketACerrar);
 

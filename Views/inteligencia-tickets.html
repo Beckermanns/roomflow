@@ -1,108 +1,174 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ROOMFLOW — Análisis de KPIs para Toma de Decisiones por Tickets</title>
-    <link rel="stylesheet" href="../Assets/css/styles.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  </head>
-  <body>
-    <header class="menu-header">
-      <section>
-        <a href="menu.html" style="text-decoration: none">
-          <h1 class="brand">ROOMFLOW</h1>
-        </a>
-      </section>
-      <section>
-        <a href="menu.html" class="btn-volver">← Menú Principal</a>
-        <button class="btn-logout" onclick="cerrarSesion()">
-          Cerrar Sesión
-        </button>
-      </section>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ROOMFLOW — Análisis de KPIs de Tickets</title>
+  <link rel="stylesheet" href="../Assets/css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="menu-header">
+    <section>
+      <a href="menu.html" style="text-decoration: none">
+        <h1 class="brand">ROOMFLOW</h1>
+      </a>
+    </section>
+    <section>
+      <a href="menu.html" class="btn-volver">← Menú Principal</a>
+      <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </section>
+  </header>
 
-    <main class="dashboard-layout">
-      <div class="filters">
-        <label for="fecha">
-          <h1>Filtrar por fecha</h1>
-        </label>
+  <main class="dashboard-layout">
+    <!-- FILTROS -->
+    <div class="filters">
+      <h2>Filtrar por fecha</h2>
+    </div>
+    <div class="form-row">
+      <div class="col">
+        <label for="fechaInicio">Fecha Inicio</label>
+        <input type="date" id="fechaInicio" />
       </div>
-      <div class="form-row">
-        <div class="col">
-          <label for="horaInicio">Fecha Inicio *</label>
-          <input type="date" id="fecha" value="" />
-        </div>
-        <div class="col">
-          <label for="horaInicio">Fecha Termino *</label>
-          <input type="date" id="fecha" value="" />
-        </div>
+      <div class="col">
+        <label for="fechaTermino">Fecha Término</label>
+        <input type="date" id="fechaTermino" />
       </div>
-      <div>
-        <button id="btnFiltrar" class="btn-primary">Aplicar filtro</button>
+    </div>
+    <div style="margin: 16px 0;">
+      <button id="btnFiltrar" class="btn-primary">Aplicar filtro</button>
+      <button id="btnLimpiarFiltro" class="btn-primary" style="background: transparent; border: 1px solid var(--border);">Limpiar filtros</button>
+    </div>
+
+    <!-- KPIs PRINCIPALES -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <h3>Tiempo Prom. Asignación</h3>
+        <p id="kpi-atencion">--</p>
+        <small style="color: var(--muted); font-size: 12px;">Desde creación a asignación</small>
       </div>
+      <div class="kpi-card">
+        <h3>Tiempo Prom. Resolución</h3>
+        <p id="kpi-resolucion">--</p>
+        <small style="color: var(--muted); font-size: 12px;">Desde creación a cierre</small>
+      </div>
+      <div class="kpi-card">
+        <h3>Tickets Activos</h3>
+        <p id="kpi-activos">--</p>
+        <small style="color: var(--muted); font-size: 12px;">Pendiente + En proceso</small>
+      </div>
+      <div class="kpi-card">
+        <h3>Resueltos Hoy</h3>
+        <p id="kpi-resueltos-hoy">--</p>
+        <small style="color: var(--muted); font-size: 12px;">Cerrados en las últimas 24h</small>
+      </div>
+      <div class="kpi-card">
+        <h3>Total de Tickets</h3>
+        <p id="kpi-total">--</p>
+        <small style="color: var(--muted); font-size: 12px;">Período seleccionado</small>
+      </div>
+      <div class="kpi-card">
+        <h3>Tickets Resueltos</h3>
+        <p id="kpi-resueltos">--</p>
+        <small style="color: var(--muted); font-size: 12px;">Estado: Cerrado</small>
+      </div>
+      <div class="kpi-card">
+        <h3>Tasa de Resolución</h3>
+        <p id="kpi-tasa">--</p>
+        <small style="color: var(--muted); font-size: 12px;">% Tickets cerrados</small>
+      </div>
+      <div class="kpi-card">
+        <h3>Prioridad A/M/B</h3>
+        <p id="kpi-prioridades">--</p>
+        <small style="color: var(--muted); font-size: 12px;">Alta / Media / Baja</small>
+      </div>
+    </section>
 
-      <section class="kpi-grid">
-        <div class="kpi-card">
-          <h3>Tiempo Prom. Atención</h3>
-          <p id="kpi-atencion">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Tiempo Prom. Resolución</h3>
-          <p id="kpi-resolucion">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Tickets Activos</h3>
-          <p id="kpi-activos">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Resueltos (día)</h3>
-          <p id="kpi-resueltos-hoy">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Total de Tickets</h3>
-          <p id="kpi-total">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Tickets Resueltos</h3>
-          <p id="kpi-resueltos">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Tasa de Resolución</h3>
-          <p id="kpi-tasa">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Prioridad A/M/B</h3>
-          <p id="kpi-prioridades">--</p>
-        </div>
-      </section>
+    <!-- GRÁFICOS -->
+    <section class="charts">
+      <div class="chart-card">
+        <h4>Tickets por Edificio</h4>
+        <canvas id="chart-edificios" height="120"></canvas>
+      </div>
+      <div class="chart-card">
+        <h4>Tickets por Estado</h4>
+        <canvas id="chart-estados" height="120"></canvas>
+      </div>
+      <div class="chart-card">
+        <h4>Tickets por Prioridad</h4>
+        <canvas id="chart-prioridades" height="120"></canvas>
+      </div>
+      <div class="chart-card">
+        <h4>Tickets por Tipo de Requerimiento</h4>
+        <canvas id="chart-requerimientos" height="120"></canvas>
+      </div>
+      <div class="chart-card" style="grid-column: span 2;">
+        <h4>Evolución de Tickets en el Tiempo</h4>
+        <canvas id="chart-evolucion" height="80"></canvas>
+      </div>
+    </section>
 
-      <section class="charts">
-        <div class="chart-card">
-          <h4>Tickets por Edificio</h4>
-          <canvas id="chart-edificios" height="120"></canvas>
-        </div>
-        <div class="chart-card">
-          <h4>Tickets por Estado</h4>
-          <canvas id="chart-estados" height="120"></canvas>
-        </div>
-        <div class="chart-card">
-          <h4>Tickets por Prioridad</h4>
-          <canvas id="chart-prioridades" height="120"></canvas>
-        </div>
-      </section>
+    <!-- TABLA DE DETALLE -->
+    <section style="margin-top: 40px;">
+      <h3>Tickets Críticos (Alta Prioridad Activos)</h3>
+      <div style="overflow-x: auto;">
+        <table class="reserva-table">
+          <thead>
+            <tr>
+              <th>ID Corto</th>
+              <th>Edificio</th>
+              <th>Espacio</th>
+              <th>Tipo</th>
+              <th>Prioridad</th>
+              <th>Estado</th>
+              <th>Días Abierto</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-criticos"></tbody>
+        </table>
+      </div>
+    </section>
 
-      <section id="detalleSala" class="hidden detalle-card">
-        <h3>Detalle seleccionado</h3>
-        <div id="detalleContenido"></div>
-        <div class="detalle-actions">
-          <button id="btnDescargar" class="btn-acceder">
-            Descargar reporte
-          </button>
-        </div>
-      </section>
-    </main>
+    <!-- BOTÓN DE DESCARGA -->
+    <section style="margin-top: 20px; text-align: center;">
+      <button id="btnDescargar" class="btn-primary">
+        📥 Descargar Reporte Excel
+      </button>
+    </section>
+  </main>
 
-    <script type="module" src="../Assets/js/dashboard.js"></script>
-  </body>
+  <script type="module" src="../Assets/js/dashboard-tickets.js"></script>
+  
+  <style>
+    /* Estilos adicionales para mejorar la presentación */
+    .kpi-card p {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 8px 0;
+    }
+    
+    .chart-card canvas {
+      max-height: 300px;
+    }
+    
+    .reserva-table {
+      font-size: 13px;
+    }
+    
+    .reserva-table td:nth-child(7) {
+      font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .charts {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</body>
 </html>
