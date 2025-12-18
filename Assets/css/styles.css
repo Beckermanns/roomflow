@@ -123,6 +123,12 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); box-sha
   padding: 16px;
   box-shadow: var(--shadow);
   text-align: center;
+  height: 100%;
+  /* AGREGA ESTO: */
+  display: flex;             /* Activa Flexbox */
+  flex-direction: column;    /* Mantiene los elementos uno debajo del otro */
+  justify-content: center;   /* Centra en el eje vertical (principal) */
+  align-items: center;
 }
 
 .kpi-card h3 {
