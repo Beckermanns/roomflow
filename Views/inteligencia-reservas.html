@@ -33,45 +33,62 @@
           <label for="fechaTermino">Fecha Término *</label>
           <input type="date" id="fechaTermino" />
         </div>
+        <div class="col">
+          <label for="filtroEdificio">Edificio</label>
+          <select id="filtroEdificio">
+            <option value="">Todos los edificios</option>
+          </select>
+        </div>
+        <div class="col">
+          <label for="filtroEspacio">Espacio</label>
+          <select id="filtroEspacio">
+            <option value="">Todos los espacios</option>
+          </select>
+        </div>
       </div>
       <div>
         <button id="btnFiltrar" class="btn-primary">Aplicar filtro</button>
+        <button id="btnLimpiarFiltros" class="btn-primary">Limpiar filtros</button>
       </div>  
 
       <!-- NIVEL EJECUTIVO -->
 
-      <section class="kpi-grid">
+      <section style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; margin-top: 24px;">
+  
+        <!-- COLUMNA IZQUIERDA: KPIs apilados -->
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          
+          <!-- KPI 1: Tasa de Ocupación -->
+          <div class="kpi-card">
+            <h3>Tasa de Ocupación</h3>
+            <p id="kpi-ocupacion">--%</p>
+            <small class="kpi-sub">Uso real de salas, laboratorios y auditorios</small>
+          </div>
 
-        <!-- KPI 1: Tasa de Ocupación -->
-        <div class="kpi-card">
-          <h3>Tasa de Ocupación</h3>
-          <p id="kpi-ocupacion">--%</p>
-          <small class="kpi-sub">Uso real de salas, laboratorios y auditorios</small>
+          <!-- KPI 2: Crecimiento de Reservas -->
+          <div class="kpi-card">
+            <h3>Crecimiento de Reservas</h3>
+            <p id="kpi-crecimiento">--%</p>
+            <small class="kpi-sub">Variación respecto al período anterior</small>
+          </div>
+
+          <!-- KPI 3: Tasa de Cancelación -->
+          <div class="kpi-card">
+            <h3>Tasa de Cancelación</h3>
+            <p id="kpi-cancelacion">--%</p>
+            <small class="kpi-sub">Nivel de planificación de reservas</small>
+          </div>
+
         </div>
 
-        <!-- KPI 2: Crecimiento de Reservas -->
-        <div class="kpi-card">
-          <h3>Crecimiento de Reservas</h3>
-          <p id="kpi-crecimiento">--%</p>
-          <small class="kpi-sub">Variación respecto al período anterior</small>
+        <!-- COLUMNA DERECHA: Gráfico de tendencia -->
+        <div class="chart-card">
+          <h4>Tendencia de Reservas</h4>
+          <canvas id="chart-tendencia" height="100"></canvas>
         </div>
-
-      </section>
-
-      <!-- NIVEL OPERATIVO -->
-      <section class="kpi-grid">
-
-        <!-- KPI 3: Tasa de Cancelación -->
-        <div class="kpi-card">
-          <h3>Tasa de Cancelación</h3>
-          <p id="kpi-cancelacion">--%</p>
-          <small class="kpi-sub">Nivel de planificación de reservas</small>
-        </div>
-
       </section>
 
       <!-- NIVEL ANALÍTICO -->
-
       <section class="charts">
 
         <!-- KPI 4: Ranking de Espacios Más Utilizados -->
@@ -90,7 +107,7 @@
 
       <!-- DETALLE -->
       <section id="detalleSala" class="hidden detalle-card">
-        <h3>Detalle seleccionado</h3>
+        <h4>Detalle seleccionado</h4>
         <div id="detalleContenido"></div>
 
         <div class="detalle-actions">
