@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ROOMFLOW — Análisis de KPIs para Toma de Decisiones por Reservas</title>
+    <title>ROOMFLOW — Análisis de KPIs para Toma de Decisiones por Tickets</title>
     <link rel="stylesheet" href="../Assets/css/styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
@@ -12,80 +12,113 @@
       <section>
         <a href="menu.html" style="text-decoration: none">
           <h1 class="brand">ROOMFLOW</h1>
+        </a>
+      </section>
+      <section>
+        <a href="menu.html" class="btn-volver">← Menú Principal</a>
+        <button class="btn-logout" onclick="cerrarSesion()">
+          Cerrar Sesión
+        </button>
+      </section>
+    </header>
+
+    <main class="dashboard-layout" style="padding: 24px">
+      <!-- FILTROS -->
+      <div class="form-row">
         <div class="col">
-          <label for="horaInicio">Fecha Inicio *</label>
-          <input type="date" id="fecha" value="" />
+          <label for="fechaInicio">Fecha Inicio *</label>
+          <input type="date" id="fechaInicio" />
         </div>
         <div class="col">
-          <label for="horaInicio">Fecha Termino *</label>
-          <input type="date" id="fecha" value="" />
+          <label for="fechaTermino">Fecha Término *</label>
+          <input type="date" id="fechaTermino" />
+        </div>
+        <div class="col">
+          <label for="filtroEdificio">Edificio</label>
+          <select id="filtroEdificio">
+            <option value="">Todos los edificios</option>
+          </select>
+        </div>
+        <div class="col">
+          <label for="filtroEspacio">Espacio</label>
+          <select id="filtroEspacio">
+            <option value="">Todos los espacios</option>
+          </select>
         </div>
       </div>
       <div>
         <button id="btnFiltrar" class="btn-primary">Aplicar filtro</button>
-      </div>
+        <button id="btnLimpiarFiltros" class="btn-primary">Limpiar filtros</button>
+      </div>  
 
-      <section class="kpi-grid">
-        <div class="kpi-card">
-          <h3>Tiempo Prom. Atención</h3>
-          <p id="kpi-atencion">--</p>
+      <!-- NIVEL EJECUTIVO -->
+
+      <section style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; margin-top: 24px;">
+  
+        <!-- COLUMNA IZQUIERDA: KPIs apilados -->
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          
+          <!-- KPI 1: Tasa de Ocupación -->
+          <div class="kpi-card">
+            <h3>Tasa de Ocupación</h3>
+            <p id="kpi-ocupacion">--%</p>
+            <small class="kpi-sub">Uso real de salas, laboratorios y auditorios</small>
+          </div>
+
+          <!-- KPI 2: Crecimiento de Reservas -->
+          <div class="kpi-card">
+            <h3>Crecimiento de Reservas</h3>
+            <p id="kpi-crecimiento">--%</p>
+            <small class="kpi-sub">Variación respecto al período anterior</small>
+          </div>
+
+          <!-- KPI 3: Tasa de Cancelación -->
+          <div class="kpi-card">
+            <h3>Tasa de Cancelación</h3>
+            <p id="kpi-cancelacion">--%</p>
+            <small class="kpi-sub">Nivel de planificación de reservas</small>
+          </div>
+
         </div>
-        <div class="kpi-card">
-          <h3>Tiempo Prom. Resolución</h3>
-          <p id="kpi-resolucion">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Tickets Activos</h3>
-          <p id="kpi-activos">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Resueltos (día)</h3>
-          <p id="kpi-resueltos-hoy">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Total de Tickets</h3>
-          <p id="kpi-total">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Tickets Resueltos</h3>
-          <p id="kpi-resueltos">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Tasa de Resolución</h3>
-          <p id="kpi-tasa">--</p>
-        </div>
-        <div class="kpi-card">
-          <h3>Prioridad A/M/B</h3>
-          <p id="kpi-prioridades">--</p>
+
+        <!-- COLUMNA DERECHA: Gráfico de tendencia -->
+        <div class="chart-card">
+          <h4>Tendencia de Reservas</h4>
+          <canvas id="chart-tendencia" height="100"></canvas>
         </div>
       </section>
 
+      <!-- NIVEL ANALÍTICO -->
       <section class="charts">
+
+        <!-- KPI 4: Ranking de Espacios Más Utilizados -->
         <div class="chart-card">
-          <h4>Tickets por Edificio</h4>
-          <canvas id="chart-edificios" height="120"></canvas>
+          <h4>Espacios Más Utilizados</h4>
+          <canvas id="chart-ranking" height="120"></canvas>
         </div>
+
+        <!-- KPI 5: Espacios Subutilizados -->
         <div class="chart-card">
-          <h4>Tickets por Estado</h4>
-          <canvas id="chart-estados" height="120"></canvas>
+          <h4>Espacios Subutilizados</h4>
+          <canvas id="chart-subutilizados" height="120"></canvas>
         </div>
-        <div class="chart-card">
-          <h4>Tickets por Prioridad</h4>
-          <canvas id="chart-prioridades" height="120"></canvas>
-        </div>
+
       </section>
 
+      <!-- DETALLE -->
       <section id="detalleSala" class="hidden detalle-card">
-        <h3>Detalle seleccionado</h3>
+        <h4>Detalle seleccionado</h4>
         <div id="detalleContenido"></div>
+
         <div class="detalle-actions">
           <button id="btnDescargar" class="btn-acceder">
             Descargar reporte
           </button>
         </div>
       </section>
+
     </main>
 
-    <script type="module" src="../Assets/js/dashboard.js"></script>
+    <script type="module" src="../Assets/js/dash-reserva.js"></script>
   </body>
 </html>

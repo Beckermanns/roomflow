@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   idReservaFiltro.value = "";
   edificioFiltro.value = "";
   espacioFiltro.innerHTML = `<option value="">Todos</option>`;
-  estadoFiltro.value = "";
+  estadoFiltro.value = "Pendiente";
   fechaDesde.value = "";
   fechaHasta.value = "";
   fechaHasta.min = "";
@@ -137,47 +137,41 @@ async function cargarReservasFiltradas() {
   }
 
   let query = supabase
-  .from("reserva")
-  .select(`
-    id_reserva,
-    id_corto,
-    fecha_reserva,
-    hra_inicio,
-    hra_termino,
-    observacion,
-    estado,
-    id_espacio,
-    espacio (
-      nombre_espacio,
-      edificio (
-        nombre_edificio
+    .from("reserva")
+    .select(`
+      id_reserva,
+      id_corto,
+      fecha_reserva,
+      hra_inicio,
+      hra_termino,
+      observacion,
+      estado,
+      id_espacio,
+      espacio (
+        nombre_espacio,
+        edificio (
+          nombre_edificio
+        )
       )
-    )
-  `);
+    `)
+    .order("fecha_reserva", { ascending: false });
 
-// 🔹 ESTADO POR DEFECTO: Pendiente
-if (!estadoFiltro.value) {
-  query = query.eq("estado", "Pendiente");
-} else {
-  query = query.eq("estado", estadoFiltro.value);
-}
-
-// 🔹 ORDENAR POR FECHA (más reciente primero)
-query = query.order("fecha_reserva", { ascending: false });
-
-  // Filtros independientes
+  // 🔹 ID Reserva
   if (idReservaFiltro.value) {
     query = query.eq("id_corto", idReservaFiltro.value.trim());
   }
 
+  // 🔹 Estado (SOLO si se selecciona uno)
   if (estadoFiltro.value) {
     query = query.eq("estado", estadoFiltro.value);
   }
 
+  // 🔹 Espacio
   if (espacioFiltro.value) {
     query = query.eq("id_espacio", espacioFiltro.value);
   }
 
+  // 🔹 Edificio sin espacio
   if (edificioFiltro.value && !espacioFiltro.value) {
     const espacios = await obtenerEspaciosPorEdificio(edificioFiltro.value);
 
@@ -189,6 +183,7 @@ query = query.order("fecha_reserva", { ascending: false });
     query = query.in("id_espacio", espacios);
   }
 
+  // 🔹 Fechas
   if (fechaDesde.value && fechaHasta.value) {
     query = query
       .gte("fecha_reserva", fechaDesde.value)
@@ -225,9 +220,8 @@ query = query.order("fecha_reserva", { ascending: false });
     `;
     tablaBody.appendChild(tr);
 
-    const selectEstado = tr.querySelector(".estado-select");
-    selectEstado.addEventListener("change", () =>
-      cambiarEstadoReserva(selectEstado));
+    tr.querySelector(".estado-select")
+      .addEventListener("change", (e) => cambiarEstadoReserva(e.target));
   });
 }
 
