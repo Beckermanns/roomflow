@@ -403,3 +403,215 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); box-sha
     min-width: 700px;
   }
 }
+
+/* ========================================= */
+/* ESTILOS PARA PANEL DE DISPONIBILIDAD    */
+/* Añade estos estilos al final de tu CSS  */
+/* ========================================= */
+
+/* Layout principal con panel de disponibilidad */
+.main-container {
+  display: flex;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 32px auto;
+  padding: 0 24px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.form-section {
+  flex: 0 0 550px;
+}
+
+.availability-section {
+  flex: 0 0 380px;
+  position: sticky;
+  top: 24px;
+  height: fit-content;
+}
+
+/* Panel de disponibilidad */
+.availability-card {
+  background: rgba(11, 16, 32, 0.8); 
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border); 
+  border-radius: 16px; 
+  box-shadow: var(--shadow); 
+  padding: 20px;
+}
+
+.availability-header {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.availability-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.selected-date {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.selected-date strong {
+  color: var(--accent);
+}
+
+.timeline {
+  position: relative;
+}
+
+.time-slot {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  border-bottom: 1px solid rgba(31, 42, 68, 0.3);
+  position: relative;
+}
+
+.time-label {
+  width: 60px;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.time-bar {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  background: rgba(15, 23, 42, 0.3);
+}
+
+.occupied-block {
+  position: absolute;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: 1px solid #991b1b;
+  border-radius: 4px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* Bloques de reservas aprobadas (VERDE) */
+.approved-block {
+  position: absolute;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: 1px solid #047857;
+  border-radius: 4px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+/* Bloques de reservas pendientes (AMARILLO) */
+.pending-block {
+  position: absolute;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: 1px solid #d97706;
+  border-radius: 4px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #1f2937;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.5);
+}
+
+.available-block {
+  position: absolute;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 4px;
+  left: 0;
+  right: 0;
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+.legend-color.occupied {
+  background: linear-gradient(135deg, #c4b15e, #dcb226);
+  border: 1px solid #991b1b;
+}
+
+.legend-color.approved {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: 1px solid #047857;
+}
+
+.legend-color.pending {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: 1px solid #d97706;
+}
+
+.legend-color.available {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .main-container {
+    flex-direction: column;
+  }
+
+  .availability-section {
+    position: static;
+    flex: 1;
+    max-width: 600px;
+  }
+}
