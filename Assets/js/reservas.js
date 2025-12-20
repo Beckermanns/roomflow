@@ -7,15 +7,17 @@ const supabase = createClient(
 
 const edificioSelect = document.getElementById("edificio");
 const espacioSelect = document.getElementById("recurso");
+const fechaInput = document.getElementById("fecha");
 const form = document.getElementById("reserva-form");
 const feedback = document.getElementById("reserva-feedback");
+const timelineContainer = document.getElementById("timeline-container");
+const displayDate = document.getElementById("display-date");
+const legend = document.getElementById("legend");
 
 // Logout
-
 window.cerrarSesion = function () {
   localStorage.removeItem("id_user");
   alert("Sesión cerrada.");
-  // Redirige al index (página de login)
   window.location.href = "index.html";
 };
 
@@ -26,6 +28,12 @@ if (!idusuarioLogeado) {
   window.location.href = "index.html";
 }
 
+// Horarios (8:00 - 22:00)
+const hours = [];
+for (let h = 8; h <= 21; h++) {
+  hours.push(`${h.toString().padStart(2, '0')}:00`);
+}
+
 // Al cargar la página, traer edificios
 document.addEventListener("DOMContentLoaded", async () => {
   espacioSelect.disabled = true;
@@ -33,7 +41,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   await cargarEdificios();
 
   // Bloquear fechas anteriores a hoy
-  const fechaInput = document.getElementById("fecha");
   const hoy = new Date().toISOString().split("T")[0];
   fechaInput.min = hoy;
 });
@@ -66,6 +73,7 @@ async function cargarEdificios() {
 edificioSelect.addEventListener("change", async (e) => {
   const edificioId = e.target.value;
   await cargarEspaciosPorEdificio(edificioId);
+  actualizarVisualizacion();
 });
 
 // Cargar espacios
@@ -107,12 +115,123 @@ async function cargarEspaciosPorEdificio(edificioId) {
   }
 }
 
+// Actualizar visualización cuando cambia fecha o espacio
+fechaInput.addEventListener("change", actualizarVisualizacion);
+espacioSelect.addEventListener("change", actualizarVisualizacion);
+
+async function actualizarVisualizacion() {
+  const fecha = fechaInput.value;
+  const espacioId = espacioSelect.value;
+
+  if (!fecha || !espacioId) {
+    timelineContainer.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📅</div>
+        <div>Selecciona una fecha y un espacio para ver la disponibilidad horaria</div>
+      </div>
+    `;
+    displayDate.textContent = "Selecciona fecha y espacio";
+    legend.style.display = "none";
+    return;
+  }
+
+  // Formatear fecha para mostrar
+  const fechaObj = new Date(fecha + 'T00:00:00');
+  const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const fechaFormateada = fechaObj.toLocaleDateString('es-ES', opciones);
+  displayDate.innerHTML = `<strong>${fechaFormateada}</strong>`;
+
+  // Obtener SOLO reservas Pendientes y Aprobadas
+  const { data: reservas, error } = await supabase
+    .from("reserva")
+    .select("hra_inicio, hra_termino, estado")
+    .eq("id_espacio", espacioId)
+    .eq("fecha_reserva", fecha)
+    .in("estado", ["Pendiente", "Aprobada"]);
+
+  if (error) {
+    console.error("Error obteniendo reservas:", error);
+    return;
+  }
+
+  // Renderizar timeline solo con Pendientes y Aprobadas
+  renderTimeline(reservas || []);
+  legend.style.display = "flex";
+}
+
+function renderTimeline(reservas) {
+  let html = '<div class="timeline">';
+  
+  hours.forEach((hora) => {
+    const horaNum = parseInt(hora.split(':')[0]);
+    
+    html += `
+      <div class="time-slot">
+        <div class="time-label">${hora}</div>
+        <div class="time-bar" id="slot-${horaNum}"></div>
+      </div>
+    `;
+  });
+
+  html += '</div>';
+  timelineContainer.innerHTML = html;
+
+  // Dibujar bloques SOLO de reservas Pendientes (amarillo) y Aprobadas (verde)
+  reservas.forEach(reserva => {
+    // Solo procesar si es Pendiente o Aprobada
+    if (reserva.estado !== "Pendiente" && reserva.estado !== "Aprobada") {
+      return;
+    }
+
+    const inicio = timeToMinutes(reserva.hra_inicio);
+    const fin = timeToMinutes(reserva.hra_termino);
+    
+    const inicioHora = Math.floor(inicio / 60);
+    const finHora = Math.floor(fin / 60);
+
+    for (let h = inicioHora; h <= finHora && h < 22; h++) {
+      if (h >= 8) {
+        const slot = document.getElementById(`slot-${h}`);
+        if (slot) {
+          const inicioSlot = Math.max(0, inicio - h * 60);
+          const finSlot = Math.min(60, fin - h * 60);
+          
+          if (finSlot > inicioSlot) {
+            const top = (inicioSlot / 60) * 100;
+            const height = ((finSlot - inicioSlot) / 60) * 100;
+            
+            const block = document.createElement('div');
+            
+            // Aplicar clase según el estado
+            if (reserva.estado === "Aprobada") {
+              block.className = 'approved-block';
+              block.textContent = '';
+            } else if (reserva.estado === "Pendiente") {
+              block.className = 'pending-block';
+              block.textContent = '';
+            }
+            
+            block.style.top = `${top}%`;
+            block.style.height = `${height}%`;
+            slot.appendChild(block);
+          }
+        }
+      }
+    }
+  });
+}
+
+function timeToMinutes(time) {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+}
+
 // Crear reserva
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const id_espacio = espacioSelect.value;
-  const fecha_reserva = document.getElementById("fecha").value;
+  const fecha_reserva = fechaInput.value;
   const horaInicio = document.getElementById("horaInicio").value;
   const horaFin = document.getElementById("horaFin").value;
   const observacion = document.getElementById("motivo").value;
@@ -134,40 +253,34 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  // Construir DateTime reales
-  const inicioNueva = new Date(`${fecha_reserva}T${horaInicio}`);
-  let terminoNueva = new Date(`${fecha_reserva}T${horaFin}`);
-
-  // Si termina al día siguiente
-  if (horaFin <= horaInicio) {
-    terminoNueva.setDate(terminoNueva.getDate() + 1);
-  }
-
-   // Validar hora
+  // Validar hora
   if (horaFin <= horaInicio) {
     feedback.textContent = "La hora de término debe ser posterior que la hora de inicio.";
     return;
   }
 
-  // Verificar solapamiento
+  // Verificar solapamiento SOLO con reservas Pendientes y Aprobadas
+  // Las reservas Rechazadas NO bloquean el horario
   const { data: reservasExistentes, error } = await supabase
-  .from("reserva")
-  .select("hra_inicio, hra_termino")
-  .eq("id_espacio", id_espacio)
-  .eq("fecha_reserva", fecha_reserva);
+    .from("reserva")
+    .select("hra_inicio, hra_termino, estado")
+    .eq("id_espacio", id_espacio)
+    .eq("fecha_reserva", fecha_reserva)
+    .in("estado", ["Pendiente", "Aprobada"]);
 
   if (error) {
     feedback.textContent = "Error al verificar disponibilidad.";
     return;
   }
 
+  // Verificar conflicto solo con Pendientes y Aprobadas
   const conflicto = reservasExistentes.some(r =>
-  horaInicio < r.hra_termino && horaFin > r.hra_inicio
+    horaInicio < r.hra_termino && horaFin > r.hra_inicio
   );
 
   if (conflicto) {
-  feedback.textContent = "El espacio ya está reservado en ese horario.";
-  return;
+    feedback.textContent = "El espacio ya está reservado en ese horario.";
+    return;
   }
 
   // Insertar reserva
@@ -187,13 +300,16 @@ form.addEventListener("submit", async (e) => {
     .select("id_corto")
     .single();
 
-    if (errorInsert) {
-      console.error(errorInsert);
-      feedback.textContent = "No se pudo crear la reserva.";
-      return;
-    }
+  if (errorInsert) {
+    console.error(errorInsert);
+    feedback.textContent = "No se pudo crear la reserva.";
+    return;
+  }
 
-    feedback.textContent = `Reserva creada exitosamente. ID: ${nuevaReserva.id_corto}`;
-    form.reset();
-    espacioSelect.disabled = true;
+  feedback.textContent = `Reserva creada exitosamente. ID: ${nuevaReserva.id_corto}`;
+  form.reset();
+  espacioSelect.disabled = true;
+  
+  // Actualizar la visualización después de crear la reserva
+  actualizarVisualizacion();
 });
