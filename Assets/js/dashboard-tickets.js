@@ -333,13 +333,18 @@ function generarGraficoEstados() {
   console.log('Estados - Pendiente:', pendientes, 'En proceso:', enProceso, 'Cerrado:', cerrados);
   
   if (chartEstados) chartEstados.destroy();
+
+  const counts = [pendientes, enProceso, cerrados];
+  const total = counts.reduce((s, v) => s + v, 0);
+  const percentages = counts.map(v => total ? +(v / total * 100).toFixed(1) : 0);
   
   chartEstados = new Chart(ctx, {
     type: 'doughnut',
     data: {
       labels: ['Pendiente', 'En Proceso', 'Cerrado'],
       datasets: [{
-        data: [pendientes, enProceso, cerrados],
+        data: percentages,              // ahora porcentajes
+        rawCounts: counts,              // guardo conteos para tooltips
         backgroundColor: [
           'rgba(239, 68, 68, 0.8)',
           'rgba(251, 191, 36, 0.8)',
@@ -360,6 +365,16 @@ function generarGraficoEstados() {
         legend: {
           position: 'bottom',
           labels: { color: '#94a3b8' }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const label = ctx.label || '';
+              const pct = ctx.parsed ?? 0;
+              const count = ctx.dataset.rawCounts?.[ctx.dataIndex] ?? 0;
+              return `${label}: ${pct}% (${count} tickets)`;
+            }
+          }
         }
       }
     }
@@ -379,13 +394,18 @@ function generarGraficoPrioridades() {
   const baja = ticketsData.filter(t => t.prioridad && t.prioridad.toLowerCase() === 'baja').length;
   
   if (chartPrioridades) chartPrioridades.destroy();
+
+  const counts = [alta, media, baja];
+  const total = counts.reduce((s, v) => s + v, 0);
+  const percentages = counts.map(v => total ? +(v / total * 100).toFixed(1) : 0);
   
   chartPrioridades = new Chart(ctx, {
     type: 'pie',
     data: {
       labels: ['Alta', 'Media', 'Baja'],
       datasets: [{
-        data: [alta, media, baja],
+        data: percentages,              // ahora porcentajes
+        rawCounts: counts,              // guardo conteos para tooltips
         backgroundColor: [
           'rgba(239, 68, 68, 0.8)',
           'rgba(251, 191, 36, 0.8)',
@@ -406,6 +426,16 @@ function generarGraficoPrioridades() {
         legend: {
           position: 'bottom',
           labels: { color: '#94a3b8' }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const label = ctx.label || '';
+              const pct = ctx.parsed ?? 0;
+              const count = ctx.dataset.rawCounts?.[ctx.dataIndex] ?? 0;
+              return `${label}: ${pct}% (${count} tickets)`;
+            }
+          }
         }
       }
     }
